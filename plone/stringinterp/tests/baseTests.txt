@@ -1,0 +1,59 @@
+Base Tests
+==========
+
+Setup
+-----
+
+    >>> from zope.component import getAdapter, queryAdapter
+    >>> from plone.stringinterp.interfaces import IStringSubstitution
+    >>> apage = self.portal['front-page']
+
+Negative Case
+-------------
+
+We shouldn't get an adapter where we haven't defined one
+
+    >>> queryAdapter(self, IStringSubstitution, 'Title')
+
+    >>> queryAdapter(self.portal, IStringSubstitution, 'NoTitle')
+    
+
+
+Basic Content
+-------------
+
+Ask for an adapter to get the title
+
+    >>> adapter = getAdapter(apage, IStringSubstitution, 'absolute_url')
+
+    >>> adapter
+    <plone.stringinterp.adapters.UrlSubstitution object at ...>
+
+    >>> adapter()
+    'http://nohost/plone/front-page'
+
+'url' is an alias for absolute_url
+    
+    >>> getAdapter(apage, IStringSubstitution, 'url')()
+    'http://nohost/plone/front-page'
+
+
+
+Minimal Dublin Core
+-------------------
+
+Ask for an adapter to get the title
+
+    >>> getAdapter(apage, IStringSubstitution, 'Title')()
+    'Welcome to Plone'
+
+Title is aliased to title
+
+    >>> getAdapter(apage, IStringSubstitution, 'title')()
+    'Welcome to Plone'
+
+The rest of Minimal Dublin
+    
+    >>> getAdapter(apage, IStringSubstitution, 'Type')()
+    u'Page'
+    

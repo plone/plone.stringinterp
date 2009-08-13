@@ -1,0 +1,43 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+   <adapter
+       for="Products.CMFCore.interfaces.IContentish"
+       provides="plone.stringinterp.interfaces.IStringSubstitution"
+       factory=".adapters.UrlSubstitution"
+       name="absolute_url"
+       />
+   <adapter
+       for="Products.CMFCore.interfaces.IContentish"
+       provides="plone.stringinterp.interfaces.IStringSubstitution"
+       factory=".adapters.UrlSubstitution"
+       name="url"
+       />
+
+   <adapter
+       for="Products.CMFCore.interfaces.IMinimalDublinCore"
+       provides="plone.stringinterp.interfaces.IStringSubstitution"
+       factory=".adapters.TitleSubstitution"
+       name="Title"
+       />
+   <adapter
+       for="Products.CMFCore.interfaces.IMinimalDublinCore"
+       provides="plone.stringinterp.interfaces.IStringSubstitution"
+       factory=".adapters.TitleSubstitution"
+       name="title"
+       />
+    <adapter
+        for="Products.CMFCore.interfaces.IMinimalDublinCore"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.DescriptionSubstitution"
+        name="Description"
+        />
+    <adapter
+        for="Products.CMFCore.interfaces.IMinimalDublinCore"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.TypeSubstitution"
+        name="Type"
+        />
+
+</configure>
