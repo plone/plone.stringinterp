@@ -1,5 +1,5 @@
-Base Tests
-==========
+Base Substitution Lookup Tests
+==============================
 
 Setup
 -----
@@ -8,21 +8,22 @@ Setup
     >>> from plone.stringinterp.interfaces import IStringSubstitution
     >>> apage = self.portal['front-page']
 
-Negative Case
--------------
+
+Negative Cases
+--------------
 
 We shouldn't get an adapter where we haven't defined one
 
     >>> queryAdapter(self, IStringSubstitution, 'Title')
 
     >>> queryAdapter(self.portal, IStringSubstitution, 'NoTitle')
-    
+
 
 
 Basic Content
 -------------
 
-Ask for an adapter to get the title
+Ask for an adapter to get the URL
 
     >>> adapter = getAdapter(apage, IStringSubstitution, 'absolute_url')
 
@@ -33,7 +34,7 @@ Ask for an adapter to get the title
     'http://nohost/plone/front-page'
 
 'url' is an alias for absolute_url
-    
+
     >>> getAdapter(apage, IStringSubstitution, 'url')()
     'http://nohost/plone/front-page'
 
@@ -52,8 +53,19 @@ Title is aliased to title
     >>> getAdapter(apage, IStringSubstitution, 'title')()
     'Welcome to Plone'
 
+
 The rest of Minimal Dublin
-    
+
+    >>> getAdapter(apage, IStringSubstitution, 'Description')()
+    'Congratulations! You have successfully installed Plone.'
+
     >>> getAdapter(apage, IStringSubstitution, 'Type')()
     u'Page'
-    
+
+
+Let's try some non-ASCII
+
+   >>> apage.setTitle('Plone in Español'.decode('utf8'))
+   >>> getAdapter(apage, IStringSubstitution, 'title')()
+   'Plone in Espa\xc3\xb1ol'
+
