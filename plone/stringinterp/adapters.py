@@ -13,6 +13,8 @@ from zope.component import adapts
 from Products.CMFCore.interfaces import \
     IContentish, IMinimalDublinCore
 
+from Products.CMFPlone.utils import safe_unicode
+
 from interfaces import IStringSubstitution
 
 
@@ -34,14 +36,14 @@ class TitleSubstitution(BaseSubstitution):
     adapts(IMinimalDublinCore)
 
     def __call__(self):
-        return self.context.Title()
+        return safe_unicode(self.context.Title())
 
 
 class DescriptionSubstitution(BaseSubstitution):
     adapts(IMinimalDublinCore)
 
     def __call__(self):
-        return self.context.Description()
+        return safe_unicode(self.context.Description())
 
 
 class TypeSubstitution(BaseSubstitution):
