@@ -5,7 +5,8 @@ from Testing import ZopeTestCase as ztc
 import plone.stringinterp.tests.stringinterpTestCase as tc
 
 testfiles = (
-    'baseTests.txt',
+    'substitutionTests.txt',
+    'interpolationTests.txt',
 )
 
 def test_suite():
