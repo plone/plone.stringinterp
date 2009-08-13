@@ -9,13 +9,13 @@ using string substitutions provided by named adapters.
 
 Let's test basic interpolation using the homepage::
 
-    >>> from plone.stringinterp import Interpolate
+    >>> from plone.stringinterp import Interpolator
 
     >>> s = """one two three ${title} ${url} ${nonesuch}"""
 
     >>> apage = self.portal['front-page']
 
-    >>> Interpolate(apage, s)()
+    >>> Interpolator(apage)(s)
     'one two three Welcome to Plone http://nohost/plone/front-page ???'
 
 

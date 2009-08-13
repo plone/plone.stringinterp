@@ -1,1 +1,1 @@
-from dollarReplace import Interpolate
+from dollarReplace import Interpolator

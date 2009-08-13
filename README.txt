@@ -7,9 +7,9 @@ for clients like plone.app.contentrules.
 
 To interpolate a string in context, just follow the pattern::
 
-    from plone.stringinterp import Interpolate
+    from plone.stringinterp import Interpolator
     
-    Interpolate(context, "Here is the title: ${title}")()
+    Interpolator(context)("Here is the title: ${title}")
 
 
 Substitution of variables that are part of the Minimal Dublin Core are
