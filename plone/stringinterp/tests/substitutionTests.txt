@@ -49,18 +49,18 @@ Minimal Dublin Core
 Ask for an adapter to get the title::
 
     >>> getAdapter(apage, IStringSubstitution, 'Title')()
-    'Welcome to Plone'
+    u'Welcome to Plone'
 
 Title is aliased to title::
 
     >>> getAdapter(apage, IStringSubstitution, 'title')()
-    'Welcome to Plone'
+    u'Welcome to Plone'
 
 
 The rest of Minimal Dublin::
 
     >>> getAdapter(apage, IStringSubstitution, 'Description')()
-    'Congratulations! You have successfully installed Plone.'
+    u'Congratulations! You have successfully installed Plone.'
 
     >>> getAdapter(apage, IStringSubstitution, 'Type')()
     u'Page'
@@ -69,6 +69,6 @@ The rest of Minimal Dublin::
 Let's try some non-ASCII::
 
    >>> apage.setTitle('Plone in Español'.decode('utf8'))
-   >>> getAdapter(apage, IStringSubstitution, 'title')()
+   >>> getAdapter(apage, IStringSubstitution, 'title')().encode('utf8')
    'Plone in Espa\xc3\xb1ol'
 
