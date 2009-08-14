@@ -14,6 +14,8 @@ from zope.component import adapts, getAdapter, ComponentLookupError
 
 from Products.CMFCore.interfaces import IContentish
 
+from plone.memoize.instance import memoize
+
 from interfaces import IStringSubstitution, IStringInterpolator
 
 
@@ -28,6 +30,7 @@ class Interpolator(object):
 
     def __init__(self, context):
         self.context = context
+        self._cache = {}
 
     def __call__(self, s):
         return dollarRE.sub(self.repl, s)
@@ -35,8 +38,12 @@ class Interpolator(object):
     def repl(self, mo):
         key = mo.group(1)
         if key and key[0] not in ['_','.']:
-            try:
-                return getAdapter(self.context, IStringSubstitution, key)()
-            except ComponentLookupError:
-                pass
-        return '???'
+            res = self._cache.get(key)
+            if res is None:
+                try:
+                    res = getAdapter(self.context, IStringSubstitution, key)()
+                except ComponentLookupError:
+                    res = u'???'
+                self._cache[key] = res
+            return res
+        return u''

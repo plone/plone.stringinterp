@@ -18,6 +18,7 @@ Let's test basic interpolation using the homepage::
     >>> Interpolator(apage)(s)
     u'one two three Welcome to Plone http://nohost/plone/front-page ???'
     
+    
 That was a direct call. Let's do it by adapter, too, proving this
 may be swapped out.
 
@@ -26,4 +27,20 @@ may be swapped out.
     u'one two three Welcome to Plone http://nohost/plone/front-page ???'
 
 
+Test caching scheme
 
+    >>> interpolator = IStringInterpolator(apage)
+    >>> interpolator(s)
+    u'one two three Welcome to Plone http://nohost/plone/front-page ???'
+
+    >>> interpolator._cache
+    {'url': 'http://nohost/plone/front-page', 'nonesuch': u'???', 'title': u'Welcome to Plone'}
+
+Directly change cache
+
+    >>> interpolator._cache['nonesuch'] = u'nothing much here'
+    
+And prove that the interpolator is using the cache
+
+    >>> interpolator(s)
+    u'one two three Welcome to Plone http://nohost/plone/front-page nothing much here'
