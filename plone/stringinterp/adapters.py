@@ -119,29 +119,40 @@ class ReviewStateSubstitution(BaseSubstitution):
         return safe_unicode(wft.getInfoFor(self.context, 'review_state'))
 
 
-class CreatedSubstitution(BaseSubstitution):
+class DateSubstitution(BaseSubstitution):
+
+    def formatDate(self, adate):
+        try:
+            return safe_unicode(
+               ulocalized_time(adate, long_format=True, context=self.context)
+            )
+        except ValueError:
+            return u'???'
+
+
+class CreatedSubstitution(DateSubstitution):
     adapts(ICatalogableDublinCore)
     
     def __call__(self):
-        return safe_unicode( ulocalized_time(self.context.created()) )
+        return self.formatDate(self.context.created())
 
 
-class EffectiveSubstitution(BaseSubstitution):
+class EffectiveSubstitution(DateSubstitution):
     adapts(ICatalogableDublinCore)
 
     def __call__(self):
-        return safe_unicode( ulocalized_time(self.context.effective()) )
+        return self.formatDate(self.context.effective())
 
 
-class ExpiresSubstitution(BaseSubstitution):
+class ExpiresSubstitution(DateSubstitution):
     adapts(ICatalogableDublinCore)
 
     def __call__(self):
-        return safe_unicode( ulocalized_time(self.context.expires()) )
+        return self.formatDate(self.context.expires())
 
 
-class ModifiedSubstitution(BaseSubstitution):
+class ModifiedSubstitution(DateSubstitution):
     adapts(ICatalogableDublinCore)
 
     def __call__(self):
-        return safe_unicode( ulocalized_time(self.context.modified()) )
+        return self.formatDate(self.context.modified())

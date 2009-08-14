@@ -51,21 +51,21 @@
     <adapter
         for="Products.CMFCore.interfaces.ICatalogableDublinCore"
         provides="plone.stringinterp.interfaces.IStringSubstitution"
-        factory=".adapters.CreatedSubstitution"
+        factory=".adapters.EffectiveSubstitution"
         name="effective"
     />
 
     <adapter
         for="Products.CMFCore.interfaces.ICatalogableDublinCore"
         provides="plone.stringinterp.interfaces.IStringSubstitution"
-        factory=".adapters.CreatedSubstitution"
+        factory=".adapters.ExpiresSubstitution"
         name="expires"
     />
 
     <adapter
         for="Products.CMFCore.interfaces.ICatalogableDublinCore"
         provides="plone.stringinterp.interfaces.IStringSubstitution"
-        factory=".adapters.CreatedSubstitution"
+        factory=".adapters.ModifiedSubstitution"
         name="modified"
     />
 

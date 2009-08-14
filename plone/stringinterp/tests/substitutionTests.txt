@@ -145,25 +145,25 @@ Everything should be in short local time format
 Creation Date
 
     >>> result = getAdapter(apage, IStringSubstitution, 'created')()
-    >>> re.match(r'\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d$', result) is not None
+    >>> re.match(r'... \d\d, \d\d\d\d \d\d:\d\d .M$', result) is not None
     True
 
 Effective Date
 
-    >>> result = getAdapter(apage, IStringSubstitution, 'effective')()
-    >>> re.match(r'\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d$', result) is not None
-    True
+    >>> getAdapter(apage, IStringSubstitution, 'effective')()
+    u'???'
+
 
 Expiration Date
 
-    >>> result = getAdapter(apage, IStringSubstitution, 'expires')()
-    >>> re.match(r'\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d$', result) is not None
-    True
+    >>> getAdapter(apage, IStringSubstitution, 'expires')()
+    u'Dec 30, 2499 11:00 PM'
+
 
 Modification Date
     
     >>> result = getAdapter(apage, IStringSubstitution, 'modified')()
-    >>> re.match(r'\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d$', result) is not None
+    >>> re.match(r'... \d\d, \d\d\d\d \d\d:\d\d .M$', result) is not None
     True
 
 
