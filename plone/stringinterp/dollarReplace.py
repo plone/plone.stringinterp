@@ -9,9 +9,12 @@ Copyright (c) 2009 Plone Foundation.
 
 import re
 
-from zope.component import getAdapter, queryAdapter, ComponentLookupError
+from zope.interface import implements
+from zope.component import adapts, getAdapter, ComponentLookupError
 
-from interfaces import IStringSubstitution
+from Products.CMFCore.interfaces import IContentish
+
+from interfaces import IStringSubstitution, IStringInterpolator
 
 
 # # regular expression for dollar-sign variable replacement.
@@ -20,6 +23,8 @@ dollarRE = re.compile(r"\$\{(\S+?)\}")
 
 
 class Interpolator(object):
+    adapts(IContentish)
+    implements(IStringInterpolator)
 
     def __init__(self, context):
         self.context = context

@@ -18,3 +18,15 @@ class IStringSubstitution(Interface):
         """
             return substitution
         """
+
+
+class IStringInterpolator(Interface):
+    """
+        provides callable returning
+        interpolated string
+    """
+
+    def __call__(s):
+        """
+            return interpolated string
+        """

@@ -17,6 +17,13 @@ Let's test basic interpolation using the homepage::
 
     >>> Interpolator(apage)(s)
     u'one two three Welcome to Plone http://nohost/plone/front-page ???'
+    
+That was a direct call. Let's do it by adapter, too, proving this
+may be swapped out.
+
+    >>> from plone.stringinterp.interfaces import IStringInterpolator
+    >>> IStringInterpolator(apage)(s)
+    u'one two three Welcome to Plone http://nohost/plone/front-page ???'
 
 
 

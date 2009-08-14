@@ -125,4 +125,10 @@
         name="identifier"
     />
 
+    <adapter
+        for="Products.CMFCore.interfaces.IContentish"
+        provides="plone.stringinterp.interfaces.IStringInterpolator"
+        factory=".dollarReplace.Interpolator"
+    />
+
 </configure>
