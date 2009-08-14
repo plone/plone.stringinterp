@@ -2,6 +2,13 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser">
 
+    <adapter
+        for="Products.CMFCore.interfaces.IContentish"
+        provides="plone.stringinterp.interfaces.IStringInterpolator"
+        factory=".dollarReplace.Interpolator"
+    />
+
+
    <adapter
        for="Products.CMFCore.interfaces.IContentish"
        provides="plone.stringinterp.interfaces.IStringSubstitution"
@@ -125,10 +132,29 @@
         name="identifier"
     />
 
+
     <adapter
-        for="Products.CMFCore.interfaces.IContentish"
-        provides="plone.stringinterp.interfaces.IStringInterpolator"
-        factory=".dollarReplace.Interpolator"
+        for="Products.CMFEditions.interfaces.IVersioned"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.ChangeCommentSubstitution"
+        name="comment"
     />
+
+    <adapter
+        for="Products.CMFEditions.interfaces.IVersioned"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.priorStateSubstitution"
+        name="prior_state"
+    />
+
+    <adapter
+        for="Products.CMFEditions.interfaces.IVersioned"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.principalSubstitution"
+        name="principal"
+    />
+
+
+
 
 </configure>

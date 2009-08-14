@@ -167,3 +167,20 @@ Modification Date
     True
 
 
+IVersioned
+----------
+
+Change Comment
+
+    >>> getAdapter(apage, IStringSubstitution, 'comment')()
+    u'Initial revision'
+    
+Prior State
+
+    >>> getAdapter(apage, IStringSubstitution, 'prior_state')()
+    u'private'
+
+    >>> getAdapter(apage, IStringSubstitution, 'principal')()
+    u'portal_owner'
+
+

@@ -12,10 +12,14 @@ import re
 from zope.interface import implements
 from zope.component import adapts
 
+from Acquisition import ImplicitAcquisitionWrapper
+
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.interfaces import \
     IContentish, IMinimalDublinCore, IWorkflowAware, IDublinCore, \
     ICatalogableDublinCore
+
+from Products.CMFEditions.interfaces import IVersioned
 
 from Products.CMFPlone.utils import safe_unicode
 from Products.CMFPlone.i18nl10n import ulocalized_time
@@ -156,3 +160,44 @@ class ModifiedSubstitution(DateSubstitution):
 
     def __call__(self):
         return self.formatDate(self.context.modified())
+
+
+class VersionedSubstitution(BaseSubstitution):
+    adapts(IVersioned)
+    
+    def getMetadata(self, item):
+        pr = getToolByName(self.context, 'portal_repository')
+        pa = getToolByName(self.context, 'portal_archivist')
+        
+        if pr.isVersionable(self.context):          
+            history = pa.getHistoryMetadata(self.context)
+            if history:
+                history = ImplicitAcquisitionWrapper(history, pa)
+                metadata = history.retrieve(history.getLength(countPurged=False)-1, countPurged=False)['metadata']['sys_metadata']
+                return safe_unicode(metadata.get(item, u'???'))
+        return u'???'
+
+#
+
+class ChangeCommentSubstitution(VersionedSubstitution):
+    
+    def __call__(self):
+        return self.getMetadata('comment')
+        
+#
+
+class priorStateSubstitution(VersionedSubstitution):
+    
+    def __call__(self):
+        return self.getMetadata('review_state')
+        
+#
+
+class principalSubstitution(VersionedSubstitution):
+    
+    def __call__(self):
+        return self.getMetadata('principal')
+        
+#
+
+
