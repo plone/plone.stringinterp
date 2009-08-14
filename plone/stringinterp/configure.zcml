@@ -19,25 +19,110 @@
        for="Products.CMFCore.interfaces.IMinimalDublinCore"
        provides="plone.stringinterp.interfaces.IStringSubstitution"
        factory=".adapters.TitleSubstitution"
-       name="Title"
-       />
-   <adapter
-       for="Products.CMFCore.interfaces.IMinimalDublinCore"
-       provides="plone.stringinterp.interfaces.IStringSubstitution"
-       factory=".adapters.TitleSubstitution"
        name="title"
        />
     <adapter
         for="Products.CMFCore.interfaces.IMinimalDublinCore"
         provides="plone.stringinterp.interfaces.IStringSubstitution"
         factory=".adapters.DescriptionSubstitution"
-        name="Description"
+        name="description"
         />
     <adapter
         for="Products.CMFCore.interfaces.IMinimalDublinCore"
         provides="plone.stringinterp.interfaces.IStringSubstitution"
         factory=".adapters.TypeSubstitution"
-        name="Type"
+        name="type"
         />
+
+    <adapter
+        for="Products.CMFCore.interfaces.IWorkflowAware"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.ReviewStateSubstitution"
+        name="review_state"
+        />
+
+    <adapter
+        for="Products.CMFCore.interfaces.ICatalogableDublinCore"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.CreatedSubstitution"
+        name="created"
+        />
+
+    <adapter
+        for="Products.CMFCore.interfaces.ICatalogableDublinCore"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.CreatedSubstitution"
+        name="effective"
+    />
+
+    <adapter
+        for="Products.CMFCore.interfaces.ICatalogableDublinCore"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.CreatedSubstitution"
+        name="expires"
+    />
+
+    <adapter
+        for="Products.CMFCore.interfaces.ICatalogableDublinCore"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.CreatedSubstitution"
+        name="modified"
+    />
+
+    <adapter
+        for="Products.CMFCore.interfaces.IDublinCore"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.CreatorsSubstitution"
+        name="creators"
+    />
+
+    <adapter
+        for="Products.CMFCore.interfaces.IDublinCore"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.ContributorsSubstitution"
+        name="contributors"
+    />
+
+    <adapter
+        for="Products.CMFCore.interfaces.IDublinCore"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.SubjectSubstitution"
+        name="subject"
+    />
+
+    <adapter
+        for="Products.CMFCore.interfaces.IDublinCore"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.SubjectSubstitution"
+        name="keywords"
+    />
+
+    <adapter
+        for="Products.CMFCore.interfaces.IDublinCore"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.FormatSubstitution"
+        name="format"
+    />
+
+    <adapter
+        for="Products.CMFCore.interfaces.IDublinCore"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.LanguageSubstitution"
+        name="language"
+    />
+
+    <adapter
+        for="Products.CMFCore.interfaces.IDublinCore"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.RightsSubstitution"
+        name="rights"
+    />
+
+    <adapter
+        for="Products.CMFCore.interfaces.IDublinCore"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.IdentifierSubstitution"
+        name="identifier"
+    />
 
 </configure>

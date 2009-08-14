@@ -7,9 +7,15 @@ via named adapters.
 Setup
 -----
 
+    >>> import re
     >>> from zope.component import getAdapter, queryAdapter
     >>> from plone.stringinterp.interfaces import IStringSubstitution
     >>> apage = self.portal['front-page']
+    
+    >>> apage.setSubject( ('keyword one', 'keyword two') )
+    >>> apage.setContributors( ('contributor one', 'contributor two') )
+    >>> apage.setLanguage( 'en' )
+    >>> apage.setRights( 'copyright me' )
 
 
 Negative Cases
@@ -17,7 +23,11 @@ Negative Cases
 
 We shouldn't get an adapter where we haven't defined one::
 
+Object with no title
+
     >>> queryAdapter(self.app, IStringSubstitution, 'Title')
+
+Non-existent substitution
 
     >>> queryAdapter(self.portal, IStringSubstitution, 'NoTitle')
 
@@ -46,12 +56,7 @@ Ask for an adapter to get the URL::
 Minimal Dublin Core
 -------------------
 
-Ask for an adapter to get the title::
-
-    >>> getAdapter(apage, IStringSubstitution, 'Title')()
-    u'Welcome to Plone'
-
-Title is aliased to title::
+Title
 
     >>> getAdapter(apage, IStringSubstitution, 'title')()
     u'Welcome to Plone'
@@ -59,10 +64,14 @@ Title is aliased to title::
 
 The rest of Minimal Dublin::
 
-    >>> getAdapter(apage, IStringSubstitution, 'Description')()
+Description
+
+    >>> getAdapter(apage, IStringSubstitution, 'description')()
     u'Congratulations! You have successfully installed Plone.'
 
-    >>> getAdapter(apage, IStringSubstitution, 'Type')()
+Content type
+
+    >>> getAdapter(apage, IStringSubstitution, 'type')()
     u'Page'
 
 
@@ -71,4 +80,90 @@ Let's try some non-ASCII::
    >>> apage.setTitle('Plone in Español'.decode('utf8'))
    >>> getAdapter(apage, IStringSubstitution, 'title')().encode('utf8')
    'Plone in Espa\xc3\xb1ol'
+
+
+
+Workflow Aware
+--------------
+
+Review State
+
+    >>> getAdapter(apage, IStringSubstitution, 'review_state')()
+    u'visible'
+
+
+
+IDublinCore
+-----------
+
+Creators
+
+    >>> getAdapter(apage, IStringSubstitution, 'creators')()
+    u'portal_owner'
+
+Contributors
+
+    >>> getAdapter(apage, IStringSubstitution, 'contributors')()
+    u'contributor one, contributor two'
+
+Subject
+    >>> getAdapter(apage, IStringSubstitution, 'subject')()
+    u'keyword one, keyword two'
+
+Keywords (alias for subject)
+
+    >>> getAdapter(apage, IStringSubstitution, 'keywords')()
+    u'keyword one, keyword two'
+    
+Format    
+
+    >>> getAdapter(apage, IStringSubstitution, 'format')()
+    u'text/html'
+
+Language
+
+    >>> getAdapter(apage, IStringSubstitution, 'language')()
+    u'en'
+
+Rights
+
+    >>> getAdapter(apage, IStringSubstitution, 'rights')()
+    u'copyright me'
+
+Identifier
+
+    >>> getAdapter(apage, IStringSubstitution, 'identifier')()
+     u'http://nohost/plone/front-page'
+
+
+
+ICatalogableDublinCore
+----------------------
+
+Everything should be in short local time format
+
+Creation Date
+
+    >>> result = getAdapter(apage, IStringSubstitution, 'created')()
+    >>> re.match(r'\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d$', result) is not None
+    True
+
+Effective Date
+
+    >>> result = getAdapter(apage, IStringSubstitution, 'effective')()
+    >>> re.match(r'\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d$', result) is not None
+    True
+
+Expiration Date
+
+    >>> result = getAdapter(apage, IStringSubstitution, 'expires')()
+    >>> re.match(r'\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d$', result) is not None
+    True
+
+Modification Date
+    
+    >>> result = getAdapter(apage, IStringSubstitution, 'modified')()
+    >>> re.match(r'\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d$', result) is not None
+    True
+
 
