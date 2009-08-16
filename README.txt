@@ -56,7 +56,7 @@ identifier
 Catalogable Dublin Core
 -----------------------
 
-Everything should be in short local time format
+Everything should be in long local time format
 
 created
 effective
