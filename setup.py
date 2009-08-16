@@ -27,6 +27,7 @@ setup(name='plone.stringinterp',
           'Products.CMFCore',
       ],
       entry_points="""
-      # -*- Entry points: -*-
+          [z3c.autoinclude.plugin]
+          target = plone
       """,
       )
