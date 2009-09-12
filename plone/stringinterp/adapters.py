@@ -7,8 +7,6 @@ Created by Steve McMahon on 2009-08-12.
 Copyright (c) 2009 Plone Foundation.
 """
 
-import re
-
 from zope.interface import implements
 from zope.component import adapts
 
@@ -186,14 +184,14 @@ class ChangeCommentSubstitution(VersionedSubstitution):
         
 #
 
-class priorStateSubstitution(VersionedSubstitution):
+class PriorStateSubstitution(VersionedSubstitution):
     
     def __call__(self):
         return self.getMetadata('review_state')
         
 #
 
-class principalSubstitution(VersionedSubstitution):
+class PrincipalSubstitution(VersionedSubstitution):
     
     def __call__(self):
         return self.getMetadata('principal')
