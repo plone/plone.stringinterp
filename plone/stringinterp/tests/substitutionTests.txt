@@ -17,6 +17,10 @@ Setup
     >>> apage.setLanguage( 'en' )
     >>> apage.setRights( 'copyright me' )
 
+    >>> from DateTime import DateTime
+    >>> expires = DateTime(2009, 9, 9)
+    >>> apage.setExpirationDate(expires)
+
 
 Negative Cases
 --------------
@@ -156,8 +160,9 @@ Effective Date
 
 Expiration Date
 
-    >>> getAdapter(apage, IStringSubstitution, 'expires')()
-    u'Dec 30, 2499 11:00 PM'
+    >>> datestring = getAdapter(apage, IStringSubstitution, 'expires')()
+    >>> DateTime(datestring) == expires
+    True
 
 
 Modification Date
