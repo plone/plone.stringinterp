@@ -183,5 +183,12 @@
         name="member_emails"
     />
 
+    <adapter
+        for="Products.CMFCore.interfaces.IContentish"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.UserEmailSubstitution"
+        name="user_email"
+    />
+
 
 </configure>

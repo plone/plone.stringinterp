@@ -31,6 +31,7 @@ Setup
     ...     self.portal.portal_membership.addMember(id, 'secret', roles, [])
     ...     member = self.portal.portal_membership.getMemberById(id)
     ...     member.setMemberProperties({'fullname': fname, 'email': email})
+    >>> self.portal.portal_membership.getAuthenticatedMember().setProperties(email='currentuser@foobar.com')
 
 
 Negative Cases
@@ -213,5 +214,9 @@ IContentish -- emails for members having a role on context
     u'user@one.com'
 
     >>> getAdapter(apage, IStringSubstitution, 'member_emails')()
-    u'user@one.com, user@two.com, user@three.com, user@four.com'
+    u'user@one.com, user@two.com, currentuser@foobar.com, user@three.com, user@four.com'
+
+    
+    >>> getAdapter(apage, IStringSubstitution, 'user_email')()
+    u'currentuser@foobar.com'
 

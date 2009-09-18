@@ -266,10 +266,25 @@ class ManagerEmailSubstitution(MailAddressSubstitution):
 #
 
 
-
 class MemberEmailSubstitution(MailAddressSubstitution):
     
     def __call__(self):
         return self.getEmailsForRole('Member')
         
 #
+
+
+class UserEmailSubstitution(BaseSubstitution):
+    adapts(IContentish)
+    
+    def __call__(self):
+        pm = getToolByName(self.context, "portal_membership")
+        if not pm.isAnonymousUser():
+            user = pm.getAuthenticatedMember()
+            if user is not None:
+                email = user.getProperty('email', None)
+                if email:
+                    return safe_unicode(email)
+        return u''
+#
+
