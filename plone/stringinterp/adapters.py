@@ -199,3 +199,77 @@ class PrincipalSubstitution(VersionedSubstitution):
 #
 
 
+# A base class for all the role->email list adapters
+class MailAddressSubstitution(BaseSubstitution):
+    adapts(IContentish)
+    
+    def getEmailsForRole(self, role):
+        # Returns a list of emails for users having the specified role.
+        # Thanks to Christophe Bosse and Cyrille Lebeaupin
+        # for demonstrating that this is a great application for sets.
+        
+        mtool = getToolByName(self.context, "portal_membership")
+        gtool = getToolByName(self.context, "portal_groups")
+        acl_users = getToolByName(self.context, "acl_users")
+
+        # get a set of ids of members with the global role
+        ids = set(acl_users.portal_role_manager.listAssignedPrincipals(role))
+
+        # union with set of ids of members with the local role
+        ids |= set([id for id, irole 
+                       in acl_users._getAllLocalRoles(self.context).items()
+                       if irole == role])
+
+        members = set()
+        for id in ids:
+            member = mtool.getMemberById(id)
+            if member is not None:
+                members.add(member)
+            else:
+                # id may be for a group
+                group = gtool.getGroupById(id)
+                if group is not None:
+                    members = members.union(group.getGroupMembers())
+                
+        emails = set()
+        for member in members:
+            email = member.getProperty('email', None)
+            if email:
+                emails.add(safe_unicode(email))
+        
+        return u', '.join(emails)
+
+# 
+
+
+class OwnerEmailSubstitution(MailAddressSubstitution):
+    
+    def __call__(self):
+        return self.getEmailsForRole('Owner')
+        
+#
+
+
+class ReviewerEmailSubstitution(MailAddressSubstitution):
+    
+    def __call__(self):
+        return self.getEmailsForRole('Reviewer')
+        
+#
+
+
+class ManagerEmailSubstitution(MailAddressSubstitution):
+    
+    def __call__(self):
+        return self.getEmailsForRole('Manager')
+        
+#
+
+
+
+class MemberEmailSubstitution(MailAddressSubstitution):
+    
+    def __call__(self):
+        return self.getEmailsForRole('Member')
+        
+#

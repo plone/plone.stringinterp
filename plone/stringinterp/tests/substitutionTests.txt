@@ -21,6 +21,17 @@ Setup
     >>> expires = DateTime(2009, 9, 9)
     >>> apage.setExpirationDate(expires)
 
+    >>> users = (
+    ... ('userone', 'User One', 'user@one.com',  ('Manager', 'Member')),
+    ... ('usertwo', 'User Two', 'user@two.com',  ('Reviewer', 'Member')),
+    ... ('userthree', 'User Three', 'user@three.com',  ('Owner', 'Member')),
+    ... ('userfour', 'User Four', 'user@four.com',  ('Member',)),
+    ... )
+    >>> for id, fname, email, roles in users:
+    ...     self.portal.portal_membership.addMember(id, 'secret', roles, [])
+    ...     member = self.portal.portal_membership.getMemberById(id)
+    ...     member.setMemberProperties({'fullname': fname, 'email': email})
+
 
 Negative Cases
 --------------
@@ -188,4 +199,19 @@ Prior State
     >>> getAdapter(apage, IStringSubstitution, 'principal')()
     u'portal_owner'
 
+
+IContentish -- emails for members having a role on context
+----------------------------------------------------------
+
+    >>> getAdapter(apage, IStringSubstitution, 'owner_emails')()
+    u'user@three.com'
+
+    >>> getAdapter(apage, IStringSubstitution, 'reviewer_emails')()
+    u'user@two.com'
+
+    >>> getAdapter(apage, IStringSubstitution, 'manager_emails')()
+    u'user@one.com'
+
+    >>> getAdapter(apage, IStringSubstitution, 'member_emails')()
+    u'user@one.com, user@two.com, user@three.com, user@four.com'
 
