@@ -7,21 +7,37 @@ Created by Steve McMahon on 2009-08-13.
 Copyright (c) 2009 Plone Foundation.
 """
 
-import re
+import string
 
 from zope.interface import implements
 from zope.component import adapts, getAdapter, ComponentLookupError
 
 from Products.CMFCore.interfaces import IContentish
 
-from plone.memoize.instance import memoize
-
 from interfaces import IStringSubstitution, IStringInterpolator
 
 
-# # regular expression for dollar-sign variable replacement.
-# we want to find ${identifier} patterns
-dollarRE = re.compile(r"\$\{(\S+?)\}")
+_marker = u'_bad_'
+
+class LazyDict(object):
+    """ cached lookup via adapter """
+    
+    def __init__(self, context):
+        self.context = context
+        self._cache = {}
+
+    def __getitem__(self, key):
+        if key and key[0] not in ['_','.']:
+            res = self._cache.get(key)
+            if res is None:
+                try:
+                    res = getAdapter(self.context, IStringSubstitution, key)()
+                except ComponentLookupError:
+                    res = _marker
+                self._cache[key] = res
+            if res != _marker:
+                return res
+        raise KeyError(key)
 
 
 class Interpolator(object):
@@ -29,21 +45,7 @@ class Interpolator(object):
     implements(IStringInterpolator)
 
     def __init__(self, context):
-        self.context = context
-        self._cache = {}
+        self._ldict = LazyDict(context)
 
     def __call__(self, s):
-        return dollarRE.sub(self.repl, s)
-
-    def repl(self, mo):
-        key = mo.group(1)
-        if key and key[0] not in ['_','.']:
-            res = self._cache.get(key)
-            if res is None:
-                try:
-                    res = getAdapter(self.context, IStringSubstitution, key)()
-                except ComponentLookupError:
-                    res = u'???'
-                self._cache[key] = res
-            return res
-        return u''
+        return string.Template(s).safe_substitute(self._ldict)
