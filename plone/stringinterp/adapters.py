@@ -199,17 +199,46 @@ class PrincipalSubstitution(VersionedSubstitution):
 #
 
 
+# A base class for adapters that need member information
+class MemberSubstitution(BaseSubstitution):
+    adapts(IContentish)
+
+    def __init__(self, context):
+        self.context = context
+        self.mtool = getToolByName(self.context, "portal_membership")
+        self.gtool = getToolByName(self.context, "portal_groups")
+
+    def getMembersFromIds(self, ids):
+        members = set()
+        for id in ids:
+            member = self.mtool.getMemberById(id)
+            if member is not None:
+                members.add(member)
+            else:
+                # id may be for a group
+                group = self.gtool.getGroupById(id)
+                if group is not None:
+                    members = members.union(group.getGroupMembers())
+        return members
+    
+    def getPropsForMembers(self, members, propname):
+        pset = set()
+        for member in members:
+            prop = member.getProperty(propname, None)
+            if prop:
+                pset.add(safe_unicode(prop))
+        return pset
+        
+    def getPropsForIds(self, ids, propname):
+        return self.getPropsForMembers(self.getMembersFromIds(ids), propname)
+
+
 # A base class for all the role->email list adapters
-class MailAddressSubstitution(BaseSubstitution):
+class MailAddressSubstitution(MemberSubstitution):
     adapts(IContentish)
     
     def getEmailsForRole(self, role):
-        # Returns a list of emails for users having the specified role.
-        # Thanks to Christophe Bosse and Cyrille Lebeaupin
-        # for demonstrating that this is a great application for sets.
         
-        mtool = getToolByName(self.context, "portal_membership")
-        gtool = getToolByName(self.context, "portal_groups")
         acl_users = getToolByName(self.context, "acl_users")
 
         # get a set of ids of members with the global role
@@ -220,24 +249,7 @@ class MailAddressSubstitution(BaseSubstitution):
                        in acl_users._getAllLocalRoles(self.context).items()
                        if irole == role])
 
-        members = set()
-        for id in ids:
-            member = mtool.getMemberById(id)
-            if member is not None:
-                members.add(member)
-            else:
-                # id may be for a group
-                group = gtool.getGroupById(id)
-                if group is not None:
-                    members = members.union(group.getGroupMembers())
-                
-        emails = set()
-        for member in members:
-            email = member.getProperty('email', None)
-            if email:
-                emails.add(safe_unicode(email))
-        
-        return u', '.join(emails)
+        return u', '.join(self.getPropsForIds(ids, 'email'))
 
 # 
 
@@ -287,4 +299,33 @@ class UserEmailSubstitution(BaseSubstitution):
                     return safe_unicode(email)
         return u''
 #
+
+
+class UserFullNameSubstitution(BaseSubstitution):
+    adapts(IContentish)
+    
+    def __call__(self):
+        pm = getToolByName(self.context, "portal_membership")
+        if not pm.isAnonymousUser():
+            user = pm.getAuthenticatedMember()
+            if user is not None:
+                fname = user.getProperty('fullname', None)
+                if fname:
+                    return safe_unicode(fname)
+        return u''
+#
+
+
+class UserIdSubstitution(BaseSubstitution):
+    adapts(IContentish)
+    
+    def __call__(self):
+        pm = getToolByName(self.context, "portal_membership")
+        if not pm.isAnonymousUser():
+            user = pm.getAuthenticatedMember()
+            if user is not None:
+                return safe_unicode(user.getId())
+        return u''
+#
+
 

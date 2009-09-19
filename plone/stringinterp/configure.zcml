@@ -189,6 +189,18 @@
         factory=".adapters.UserEmailSubstitution"
         name="user_email"
     />
+    <adapter
+        for="Products.CMFCore.interfaces.IContentish"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.UserFullNameSubstitution"
+        name="user_fullname"
+    />
+    <adapter
+        for="Products.CMFCore.interfaces.IContentish"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.UserIdSubstitution"
+        name="user_id"
+    />
 
 
 </configure>
