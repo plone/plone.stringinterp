@@ -2,6 +2,15 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser">
 
+    <browser:page
+        for="*"
+        name="stringinterp_info"
+        class=".browser.SubstitutionInfo"
+        allowed_interface=".interfaces.IStringSubstitutionInfo"
+        permission="zope.Public"
+    />
+   
+
     <adapter
         for="Products.CMFCore.interfaces.IContentish"
         provides="plone.stringinterp.interfaces.IStringInterpolator"

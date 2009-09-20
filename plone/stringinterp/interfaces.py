@@ -13,11 +13,16 @@ class IStringSubstitution(Interface):
     """
         provides callable returning the substitution
     """
-    
+
     def __call__():
         """
             return substitution
         """
+
+    # if you would like your substitution listed
+    # in lists, provide name, description and category
+    # class attributes
+
 
 
 class IStringInterpolator(Interface):
@@ -29,4 +34,15 @@ class IStringInterpolator(Interface):
     def __call__(s):
         """
             return interpolated string
+        """
+
+class IStringSubstitutionInfo(Interface):
+    """
+      provides information on available IStringSubstitution adapters
+    """
+
+    def substitutionList():
+        """
+        returns sequence:
+        [ (categoryTitle, [{'id':subId, 'description':subDescription}, ...]), ...  ]
         """

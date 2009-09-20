@@ -8,8 +8,8 @@ Setup
 -----
 
     >>> import re
-    >>> from zope.component import getAdapter, queryAdapter
-    >>> from plone.stringinterp.interfaces import IStringSubstitution
+    >>> from zope.component import getAdapter, queryAdapter, queryMultiAdapter
+    >>> from plone.stringinterp.interfaces import IStringSubstitution, IStringSubstitutionInfo
     >>> apage = self.portal['front-page']
     
     >>> apage.setSubject( ('keyword one', 'keyword two') )
@@ -48,6 +48,20 @@ Non-existent substitution
 
     >>> queryAdapter(self.portal, IStringSubstitution, 'NoTitle')
 
+
+
+Listing Available String Substitutions
+--------------------------------------
+
+    We can get a list of all of the available substitutions, ready
+    to use in a template::
+
+    >>> subinfo = queryMultiAdapter((self.portal, self.portal.REQUEST), name=u'stringinterp_info')
+    >>> subinfo
+    <Products.Five.metaclass.SubstitutionInfo object at ...>
+
+    >>> subinfo.substitutionList()[0]['category']
+    u'All Content'
 
 
 Basic Content

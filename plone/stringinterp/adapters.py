@@ -24,16 +24,21 @@ from Products.CMFPlone.i18nl10n import ulocalized_time
 
 from interfaces import IStringSubstitution
 
+from plone.stringinterp import _
+
 
 class BaseSubstitution(object):
     implements(IStringSubstitution)
-
+    
     def __init__(self, context):
         self.context = context
 
 
 class UrlSubstitution(BaseSubstitution):
     adapts(IContentish)
+    
+    category = _(u'All Content')
+    description = _(u'URL')
     
     def __call__(self):
         return self.context.absolute_url()
@@ -42,12 +47,18 @@ class UrlSubstitution(BaseSubstitution):
 class TitleSubstitution(BaseSubstitution):
     adapts(IMinimalDublinCore)
 
+    category = _(u'Dublin Core')
+    description = _(u'Title')
+
     def __call__(self):
         return safe_unicode(self.context.Title())
 
 
 class DescriptionSubstitution(BaseSubstitution):
     adapts(IMinimalDublinCore)
+
+    category = _(u'Dublin Core')
+    description = _(u'Description')
 
     def __call__(self):
         return safe_unicode(self.context.Description())
@@ -56,11 +67,17 @@ class DescriptionSubstitution(BaseSubstitution):
 class TypeSubstitution(BaseSubstitution):
     adapts(IMinimalDublinCore)
 
+    category = _(u'Dublin Core')
+    description = _(u'Content Type')
+
     def __call__(self):
         return self.context.Type()
 
 class CreatorsSubstitution(BaseSubstitution):
     adapts(IDublinCore)
+
+    category = _(u'Dublin Core')
+    description = _(u'Creators')
 
     def __call__(self):
         return safe_unicode( ', '.join(self.context.listCreators()) )
@@ -69,12 +86,18 @@ class CreatorsSubstitution(BaseSubstitution):
 class ContributorsSubstitution(BaseSubstitution):
     adapts(IDublinCore)
 
+    category = _(u'Dublin Core')
+    description = _(u'Contributors')
+
     def __call__(self):
         return safe_unicode( ', '.join(self.context.listContributors()) )
 
 
 class SubjectSubstitution(BaseSubstitution):
     adapts(IDublinCore)
+
+    category = _(u'Dublin Core')
+    description = _(u'Subject')
 
     def __call__(self):
         return safe_unicode( ', '.join(self.context.Subject()) )
@@ -84,6 +107,9 @@ class SubjectSubstitution(BaseSubstitution):
 class FormatSubstitution(BaseSubstitution):
     adapts(IDublinCore)
 
+    category = _(u'Dublin Core')
+    description = _(u'Format')
+
     def __call__(self):
         return safe_unicode( self.context.Format() )
 #
@@ -91,6 +117,9 @@ class FormatSubstitution(BaseSubstitution):
 
 class LanguageSubstitution(BaseSubstitution):
     adapts(IDublinCore)
+
+    category = _(u'Dublin Core')
+    description = _(u'Language')
 
     def __call__(self):
         return safe_unicode( self.context.Language() )
@@ -100,6 +129,9 @@ class LanguageSubstitution(BaseSubstitution):
 class IdentifierSubstitution(BaseSubstitution):
     adapts(IDublinCore)
 
+    category = _(u'Dublin Core')
+    description = _(u'Identifier')
+
     def __call__(self):
         return safe_unicode( self.context.Identifier() )
 #
@@ -107,6 +139,9 @@ class IdentifierSubstitution(BaseSubstitution):
 
 class RightsSubstitution(BaseSubstitution):
     adapts(IDublinCore)
+
+    category = _(u'Dublin Core')
+    description = _(u'Rights')
 
     def __call__(self):
         return safe_unicode( self.context.Rights() )
@@ -116,6 +151,9 @@ class RightsSubstitution(BaseSubstitution):
 class ReviewStateSubstitution(BaseSubstitution):
     adapts(IWorkflowAware)
     
+    category = _(u'Workflow')
+    description = _(u'Review State')
+
     def __call__(self):
         wft = getToolByName(self.context, 'portal_workflow')
         return safe_unicode(wft.getInfoFor(self.context, 'review_state'))
@@ -135,12 +173,18 @@ class DateSubstitution(BaseSubstitution):
 class CreatedSubstitution(DateSubstitution):
     adapts(ICatalogableDublinCore)
     
+    category = _(u'Dublin Core')
+    description = _(u'Date Created')
+
     def __call__(self):
         return self.formatDate(self.context.created())
 
 
 class EffectiveSubstitution(DateSubstitution):
     adapts(ICatalogableDublinCore)
+
+    category = _(u'Dublin Core')
+    description = _(u'Date Effective')
 
     def __call__(self):
         return self.formatDate(self.context.effective())
@@ -149,12 +193,18 @@ class EffectiveSubstitution(DateSubstitution):
 class ExpiresSubstitution(DateSubstitution):
     adapts(ICatalogableDublinCore)
 
+    category = _(u'Dublin Core')
+    description = _(u'Date Expires')
+
     def __call__(self):
         return self.formatDate(self.context.expires())
 
 
 class ModifiedSubstitution(DateSubstitution):
     adapts(ICatalogableDublinCore)
+
+    category = _(u'Dublin Core')
+    description = _(u'Date Modified')
 
     def __call__(self):
         return self.formatDate(self.context.modified())
@@ -179,6 +229,9 @@ class VersionedSubstitution(BaseSubstitution):
 
 class ChangeCommentSubstitution(VersionedSubstitution):
     
+    category = _(u'Versioning')
+    description = _(u'Change Comment')
+
     def __call__(self):
         return self.getMetadata('comment')
         
@@ -186,6 +239,9 @@ class ChangeCommentSubstitution(VersionedSubstitution):
 
 class PriorStateSubstitution(VersionedSubstitution):
     
+    category = _(u'Versioning')
+    description = _(u'Prior State')
+
     def __call__(self):
         return self.getMetadata('review_state')
         
@@ -193,6 +249,9 @@ class PriorStateSubstitution(VersionedSubstitution):
 
 class PrincipalSubstitution(VersionedSubstitution):
     
+    category = _(u'Versioning')
+    description = _(u'Changed By')
+
     def __call__(self):
         return self.getMetadata('principal')
         
@@ -256,6 +315,9 @@ class MailAddressSubstitution(MemberSubstitution):
 
 class OwnerEmailSubstitution(MailAddressSubstitution):
     
+    category = _(u'E-Mail Addresses')
+    description = _(u'Owners')
+
     def __call__(self):
         return self.getEmailsForRole('Owner')
         
@@ -264,6 +326,9 @@ class OwnerEmailSubstitution(MailAddressSubstitution):
 
 class ReviewerEmailSubstitution(MailAddressSubstitution):
     
+    category = _(u'E-Mail Addresses')
+    description = _(u'Reviewers')
+
     def __call__(self):
         return self.getEmailsForRole('Reviewer')
         
@@ -272,6 +337,9 @@ class ReviewerEmailSubstitution(MailAddressSubstitution):
 
 class ManagerEmailSubstitution(MailAddressSubstitution):
     
+    category = _(u'E-Mail Addresses')
+    description = _(u'Managers')
+
     def __call__(self):
         return self.getEmailsForRole('Manager')
         
@@ -280,6 +348,9 @@ class ManagerEmailSubstitution(MailAddressSubstitution):
 
 class MemberEmailSubstitution(MailAddressSubstitution):
     
+    category = _(u'E-Mail Addresses')
+    description = _(u'Members')
+
     def __call__(self):
         return self.getEmailsForRole('Member')
         
@@ -288,6 +359,9 @@ class MemberEmailSubstitution(MailAddressSubstitution):
 
 class UserEmailSubstitution(BaseSubstitution):
     adapts(IContentish)
+    
+    category = _(u'Current User')
+    description = _(u'E-Mail Address')
     
     def __call__(self):
         pm = getToolByName(self.context, "portal_membership")
@@ -304,6 +378,9 @@ class UserEmailSubstitution(BaseSubstitution):
 class UserFullNameSubstitution(BaseSubstitution):
     adapts(IContentish)
     
+    category = _(u'Current User')
+    description = _(u'Full Name')
+    
     def __call__(self):
         pm = getToolByName(self.context, "portal_membership")
         if not pm.isAnonymousUser():
@@ -319,6 +396,9 @@ class UserFullNameSubstitution(BaseSubstitution):
 class UserIdSubstitution(BaseSubstitution):
     adapts(IContentish)
     
+    category = _(u'Current User')
+    description = _(u'Id')
+    
     def __call__(self):
         pm = getToolByName(self.context, "portal_membership")
         if not pm.isAnonymousUser():
@@ -327,5 +407,3 @@ class UserIdSubstitution(BaseSubstitution):
                 return safe_unicode(user.getId())
         return u''
 #
-
-
