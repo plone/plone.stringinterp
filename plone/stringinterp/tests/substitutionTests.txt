@@ -244,3 +244,11 @@ IContentish -- info on current user
     >>> getAdapter(apage, IStringSubstitution, 'user_id')()
     u'test_user_1_'
 
+
+IContentish -- info on last change, workflow or version
+-------------------------------------------------------
+
+Change Comment
+
+    >>> getAdapter(apage, IStringSubstitution, 'change_comment')()
+    u'Initial revision'

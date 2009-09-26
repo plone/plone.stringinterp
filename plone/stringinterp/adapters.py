@@ -10,7 +10,7 @@ Copyright (c) 2009 Plone Foundation.
 from zope.interface import implements
 from zope.component import adapts
 
-from Acquisition import ImplicitAcquisitionWrapper
+from Acquisition import ImplicitAcquisitionWrapper, aq_inner
 
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.interfaces import \
@@ -18,6 +18,7 @@ from Products.CMFCore.interfaces import \
     ICatalogableDublinCore
 
 from Products.CMFEditions.interfaces import IVersioned
+from Products.CMFCore.WorkflowCore import WorkflowException
 
 from Products.CMFPlone.utils import safe_unicode
 from Products.CMFPlone.i18nl10n import ulocalized_time
@@ -407,3 +408,71 @@ class UserIdSubstitution(BaseSubstitution):
                 return safe_unicode(user.getId())
         return u''
 #
+
+
+# a base class for substitutions that use
+# last revision or workflow information
+class ChangeSubstitution(BaseSubstitution):
+
+    def lastWorkflowChange(self):
+        workflow = getToolByName(self.context, 'portal_workflow')
+        try:
+            review_history = workflow.getInfoFor(self.context, 'review_history')
+        except WorkflowException:
+            return None
+        
+        # filter out automatic transitions.
+        review_history = [r for r in review_history if r['action']]
+
+        if review_history:
+            r = review_history[-1]
+            r['type'] = 'workflow'
+            r['transition_title'] = workflow.getTitleForTransitionOnType(r['action'],
+                                                                         self.context.portal_type)
+            r['actorid'] = r['actor']
+        else:
+            r = None
+        return r
+
+    def lastRevision(self):
+        context = aq_inner(self.context)
+        rt = getToolByName(context, "portal_repository")
+        pa = getToolByName(self.context, 'portal_archivist')
+        if rt.isVersionable(context):
+            history = pa.getHistoryMetadata(self.context)
+            if history:
+                history = ImplicitAcquisitionWrapper(history, pa)
+                meta = history.retrieve(history.getLength(countPurged=False)-1, countPurged=False)['metadata']['sys_metadata']
+                return dict(type='versioning',
+                        action=_(u"edit"),
+                        transition_title=_(u"Edit"),
+                        actorid=meta["principal"],
+                        time=meta["timestamp"],
+                        comments=meta['comment'],
+                        review_state=meta["review_state"],
+                        )
+        return None
+
+    # TODO: cache this on the request
+    def lastChange(self):
+        workflow_change = self.lastWorkflowChange()
+        last_revision = self.lastRevision()
+        if not workflow_change:
+            return last_revision
+        elif not last_revision:
+            return workflow_change
+        if workflow_change['time'] > last_revision['time']:
+            return workflow_change
+        return last_revision
+    
+    def lastChangeMetadata(self, id):
+        return safe_unicode(self.lastChange().get(id, ''))
+#
+
+
+class LastChangeCommentSubstitution(ChangeSubstitution):
+    adapts(IContentish)
+
+    def __call__(self):
+        return self.lastChangeMetadata('comments')
+    

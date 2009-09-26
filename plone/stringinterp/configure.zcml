@@ -211,5 +211,12 @@
         name="user_id"
     />
 
+    <adapter
+        for="Products.CMFCore.interfaces.IContentish"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.LastChangeCommentSubstitution"
+        name="change_comment"
+    />
+
 
 </configure>
