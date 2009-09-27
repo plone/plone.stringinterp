@@ -23,6 +23,8 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.utils import safe_unicode
 from Products.CMFPlone.i18nl10n import ulocalized_time
 
+from plone.memoize.request import memoize_diy_request
+
 from interfaces import IStringSubstitution
 
 from plone.stringinterp import _
@@ -363,6 +365,20 @@ class UserIdSubstitution(BaseSubstitution):
 #
 
 
+# memoize on the request an expensive function called by the
+# ChangeSubstitution class.
+@memoize_diy_request(arg=1)
+def _lastChange(self, request):
+    workflow_change = self.lastWorkflowChange()
+    last_revision = self.lastRevision()
+    if not workflow_change:
+        return last_revision
+    elif not last_revision:
+        return workflow_change
+    if workflow_change['time'] > last_revision['time']:
+        return workflow_change
+    return last_revision
+
 # a base class for substitutions that use
 # last revision or workflow information
 class ChangeSubstitution(BaseSubstitution):
@@ -406,21 +422,10 @@ class ChangeSubstitution(BaseSubstitution):
                         )
         return None
 
-    # TODO: cache this on the request
-    def lastChange(self):
-        workflow_change = self.lastWorkflowChange()
-        last_revision = self.lastRevision()
-        if not workflow_change:
-            return last_revision
-        elif not last_revision:
-            return workflow_change
-        if workflow_change['time'] > last_revision['time']:
-            return workflow_change
-        return last_revision
-    
     def lastChangeMetadata(self, id):
-        return safe_unicode(self.lastChange().get(id, ''))
+        return safe_unicode(_lastChange(self, self.context.REQUEST).get(id, ''))
 #
+
 
 
 class LastChangeCommentSubstitution(ChangeSubstitution):
