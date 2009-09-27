@@ -217,6 +217,24 @@
         factory=".adapters.LastChangeCommentSubstitution"
         name="change_comment"
     />
+    <adapter
+        for="Products.CMFCore.interfaces.IContentish"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.LastChangeTitleSubstitution"
+        name="change_title"
+    />
+    <adapter
+        for="Products.CMFCore.interfaces.IContentish"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.LastChangeTypeSubstitution"
+        name="change_type"
+    />
+    <adapter
+        for="Products.CMFCore.interfaces.IContentish"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.LastChangeActorIdSubstitution"
+        name="change_authorid"
+    />
 
 
 </configure>

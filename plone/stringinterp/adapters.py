@@ -473,6 +473,40 @@ class ChangeSubstitution(BaseSubstitution):
 class LastChangeCommentSubstitution(ChangeSubstitution):
     adapts(IContentish)
 
+    category = _(u'History')
+    description = _(u'Comment')
+
     def __call__(self):
         return self.lastChangeMetadata('comments')
-    
+#
+
+
+class LastChangeTitleSubstitution(ChangeSubstitution):
+    adapts(IContentish)
+
+    category = _(u'History')
+    description = _(u'Transition title')
+
+    def __call__(self):
+        return self.lastChangeMetadata('transition_title')
+#
+
+class LastChangeTypeSubstitution(ChangeSubstitution):
+    adapts(IContentish)
+
+    category = _(u'History')
+    description = _(u'Change type')
+
+    def __call__(self):
+        return self.lastChangeMetadata('type')
+#
+
+class LastChangeActorIdSubstitution(ChangeSubstitution):
+    adapts(IContentish)
+
+    category = _(u'History')
+    description = _(u'Change author')
+
+    def __call__(self):
+        return self.lastChangeMetadata('actorid')
+#

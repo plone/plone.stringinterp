@@ -248,7 +248,35 @@ IContentish -- info on current user
 IContentish -- info on last change, workflow or version
 -------------------------------------------------------
 
-Change Comment
+Inspect a version change
 
     >>> getAdapter(apage, IStringSubstitution, 'change_comment')()
     u'Initial revision'
+
+    >>> getAdapter(apage, IStringSubstitution, 'change_title')()
+    u'Edit'
+
+    >>> getAdapter(apage, IStringSubstitution, 'change_type')()
+    u'versioning'
+
+    >>> getAdapter(apage, IStringSubstitution, 'change_authorid')()
+    u'portal_owner'
+
+Induce a workflow change
+
+    >>> wf_tool = self.portal.portal_workflow
+    >>> self.loginAsPortalOwner()
+    >>> wf_tool.doActionFor(apage, 'publish', comment='publish it!')
+
+    >>> getAdapter(apage, IStringSubstitution, 'change_comment')()
+    u'publish it!'
+
+    >>> getAdapter(apage, IStringSubstitution, 'change_title')()
+    u'Publish'
+
+    >>> getAdapter(apage, IStringSubstitution, 'change_type')()
+    u'workflow'
+
+    >>> getAdapter(apage, IStringSubstitution, 'change_authorid')()
+    u'portal_owner'
+
