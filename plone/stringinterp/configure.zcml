@@ -143,28 +143,6 @@
 
 
     <adapter
-        for="Products.CMFEditions.interfaces.IVersioned"
-        provides="plone.stringinterp.interfaces.IStringSubstitution"
-        factory=".adapters.ChangeCommentSubstitution"
-        name="comment"
-    />
-
-    <adapter
-        for="Products.CMFEditions.interfaces.IVersioned"
-        provides="plone.stringinterp.interfaces.IStringSubstitution"
-        factory=".adapters.PriorStateSubstitution"
-        name="prior_state"
-    />
-
-    <adapter
-        for="Products.CMFEditions.interfaces.IVersioned"
-        provides="plone.stringinterp.interfaces.IStringSubstitution"
-        factory=".adapters.PrincipalSubstitution"
-        name="principal"
-    />
-
-
-    <adapter
         for="Products.CMFCore.interfaces.IContentish"
         provides="plone.stringinterp.interfaces.IStringSubstitution"
         factory=".adapters.OwnerEmailSubstitution"

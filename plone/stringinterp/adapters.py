@@ -211,53 +211,6 @@ class ModifiedSubstitution(DateSubstitution):
         return self.formatDate(self.context.modified())
 
 
-class VersionedSubstitution(BaseSubstitution):
-    adapts(IVersioned)
-    
-    def getMetadata(self, item):
-        pr = getToolByName(self.context, 'portal_repository')
-        pa = getToolByName(self.context, 'portal_archivist')
-        
-        if pr.isVersionable(self.context):          
-            history = pa.getHistoryMetadata(self.context)
-            if history:
-                history = ImplicitAcquisitionWrapper(history, pa)
-                metadata = history.retrieve(history.getLength(countPurged=False)-1, countPurged=False)['metadata']['sys_metadata']
-                return safe_unicode(metadata.get(item, u'???'))
-        return u'???'
-
-#
-
-class ChangeCommentSubstitution(VersionedSubstitution):
-    
-    category = _(u'Versioning')
-    description = _(u'Change Comment')
-
-    def __call__(self):
-        return self.getMetadata('comment')
-        
-#
-
-class PriorStateSubstitution(VersionedSubstitution):
-    
-    category = _(u'Versioning')
-    description = _(u'Prior State')
-
-    def __call__(self):
-        return self.getMetadata('review_state')
-        
-#
-
-class PrincipalSubstitution(VersionedSubstitution):
-    
-    category = _(u'Versioning')
-    description = _(u'Changed By')
-
-    def __call__(self):
-        return self.getMetadata('principal')
-        
-#
-
 
 # A base class for adapters that need member information
 class MemberSubstitution(BaseSubstitution):

@@ -199,23 +199,6 @@ Modification Date
     True
 
 
-IVersioned
-----------
-
-Change Comment
-
-    >>> getAdapter(apage, IStringSubstitution, 'comment')()
-    u'Initial revision'
-    
-Prior State
-
-    >>> getAdapter(apage, IStringSubstitution, 'prior_state')()
-    u'private'
-
-    >>> getAdapter(apage, IStringSubstitution, 'principal')()
-    u'portal_owner'
-
-
 IContentish -- emails for members having a role on context
 ----------------------------------------------------------
 
@@ -248,7 +231,7 @@ IContentish -- info on current user
 IContentish -- info on last change, workflow or version
 -------------------------------------------------------
 
-Inspect a version change
+Inspect a version change (the most recent change)
 
     >>> getAdapter(apage, IStringSubstitution, 'change_comment')()
     u'Initial revision'
@@ -262,11 +245,13 @@ Inspect a version change
     >>> getAdapter(apage, IStringSubstitution, 'change_authorid')()
     u'portal_owner'
 
-Induce a workflow change
+Induce a workflow change, which will become the most recent change.
 
     >>> wf_tool = self.portal.portal_workflow
     >>> self.loginAsPortalOwner()
     >>> wf_tool.doActionFor(apage, 'publish', comment='publish it!')
+    >>> getAdapter(apage, IStringSubstitution, 'review_state')()
+    u'published'
 
     >>> getAdapter(apage, IStringSubstitution, 'change_comment')()
     u'publish it!'
