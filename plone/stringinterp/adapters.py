@@ -367,10 +367,10 @@ class UserIdSubstitution(BaseSubstitution):
 
 # memoize on the request an expensive function called by the
 # ChangeSubstitution class.
-@memoize_diy_request(arg=1)
-def _lastChange(self, request):
-    workflow_change = self.lastWorkflowChange()
-    last_revision = self.lastRevision()
+@memoize_diy_request()
+def _lastChange(request, context):
+    workflow_change = _lastWorkflowChange(context)
+    last_revision = _lastRevision(context)
     if not workflow_change:
         return last_revision
     elif not last_revision:
@@ -379,51 +379,51 @@ def _lastChange(self, request):
         return workflow_change
     return last_revision
 
+def _lastWorkflowChange(context):
+    workflow = getToolByName(context, 'portal_workflow')
+    try:
+        review_history = workflow.getInfoFor(context, 'review_history')
+    except WorkflowException:
+        return None
+    
+    # filter out automatic transitions.
+    review_history = [r for r in review_history if r['action']]
+
+    if review_history:
+        r = review_history[-1]
+        r['type'] = 'workflow'
+        r['transition_title'] = \
+            workflow.getTitleForTransitionOnType(r['action'], context.portal_type)
+        r['actorid'] = r['actor']
+    else:
+        r = None
+    return r
+
+def _lastRevision(context):
+    context = aq_inner(context)
+    rt = getToolByName(context, "portal_repository")
+    pa = getToolByName(context, 'portal_archivist')
+    if rt.isVersionable(context):
+        history = pa.getHistoryMetadata(context)
+        if history:
+            history = ImplicitAcquisitionWrapper(history, pa)
+            meta = history.retrieve(history.getLength(countPurged=False)-1, countPurged=False)['metadata']['sys_metadata']
+            return dict(type='versioning',
+                    action=_(u"edit"),
+                    transition_title=_(u"Edit"),
+                    actorid=meta["principal"],
+                    time=meta["timestamp"],
+                    comments=meta['comment'],
+                    review_state=meta["review_state"],
+                    )
+    return None
+
 # a base class for substitutions that use
 # last revision or workflow information
 class ChangeSubstitution(BaseSubstitution):
 
-    def lastWorkflowChange(self):
-        workflow = getToolByName(self.context, 'portal_workflow')
-        try:
-            review_history = workflow.getInfoFor(self.context, 'review_history')
-        except WorkflowException:
-            return None
-        
-        # filter out automatic transitions.
-        review_history = [r for r in review_history if r['action']]
-
-        if review_history:
-            r = review_history[-1]
-            r['type'] = 'workflow'
-            r['transition_title'] = workflow.getTitleForTransitionOnType(r['action'],
-                                                                         self.context.portal_type)
-            r['actorid'] = r['actor']
-        else:
-            r = None
-        return r
-
-    def lastRevision(self):
-        context = aq_inner(self.context)
-        rt = getToolByName(context, "portal_repository")
-        pa = getToolByName(self.context, 'portal_archivist')
-        if rt.isVersionable(context):
-            history = pa.getHistoryMetadata(self.context)
-            if history:
-                history = ImplicitAcquisitionWrapper(history, pa)
-                meta = history.retrieve(history.getLength(countPurged=False)-1, countPurged=False)['metadata']['sys_metadata']
-                return dict(type='versioning',
-                        action=_(u"edit"),
-                        transition_title=_(u"Edit"),
-                        actorid=meta["principal"],
-                        time=meta["timestamp"],
-                        comments=meta['comment'],
-                        review_state=meta["review_state"],
-                        )
-        return None
-
     def lastChangeMetadata(self, id):
-        return safe_unicode(_lastChange(self, self.context.REQUEST).get(id, ''))
+        return safe_unicode(_lastChange(self.context.REQUEST, self.context).get(id, ''))
 #
 
 
