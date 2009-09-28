@@ -10,6 +10,7 @@ Copyright (c) 2009 Plone Foundation.
 from zope.interface import implements
 from zope.component import adapts
 
+from AccessControl import Unauthorized
 from Acquisition import ImplicitAcquisitionWrapper, aq_inner
 
 from Products.CMFCore.utils import getToolByName
@@ -35,7 +36,16 @@ class BaseSubstitution(object):
     
     def __init__(self, context):
         self.context = context
-
+    
+    # __call__ is a wrapper for the subclassed
+    # adapter's actual substitution that makes sure we're
+    # not generating unauth exceptions or returning non-unicode.
+    def __call__(self):
+        try:
+            return safe_unicode( self.safe_call() )
+        except Unauthorized:
+            return _(u'Unauthorized')
+        
 
 class UrlSubstitution(BaseSubstitution):
     adapts(IContentish)
@@ -43,7 +53,7 @@ class UrlSubstitution(BaseSubstitution):
     category = _(u'All Content')
     description = _(u'URL')
     
-    def __call__(self):
+    def safe_call(self):
         return self.context.absolute_url()
 
 
@@ -53,8 +63,8 @@ class TitleSubstitution(BaseSubstitution):
     category = _(u'Dublin Core')
     description = _(u'Title')
 
-    def __call__(self):
-        return safe_unicode(self.context.Title())
+    def safe_call(self):
+        return self.context.Title()
 
 
 class DescriptionSubstitution(BaseSubstitution):
@@ -63,8 +73,8 @@ class DescriptionSubstitution(BaseSubstitution):
     category = _(u'Dublin Core')
     description = _(u'Description')
 
-    def __call__(self):
-        return safe_unicode(self.context.Description())
+    def safe_call(self):
+        return self.context.Description()
 
 
 class TypeSubstitution(BaseSubstitution):
@@ -73,7 +83,7 @@ class TypeSubstitution(BaseSubstitution):
     category = _(u'Dublin Core')
     description = _(u'Content Type')
 
-    def __call__(self):
+    def safe_call(self):
         return self.context.Type()
 
 class CreatorsSubstitution(BaseSubstitution):
@@ -82,8 +92,8 @@ class CreatorsSubstitution(BaseSubstitution):
     category = _(u'Dublin Core')
     description = _(u'Creators')
 
-    def __call__(self):
-        return safe_unicode( ', '.join(self.context.listCreators()) )
+    def safe_call(self):
+        return  ', '.join(self.context.listCreators() )
 
 
 class ContributorsSubstitution(BaseSubstitution):
@@ -92,8 +102,8 @@ class ContributorsSubstitution(BaseSubstitution):
     category = _(u'Dublin Core')
     description = _(u'Contributors')
 
-    def __call__(self):
-        return safe_unicode( ', '.join(self.context.listContributors()) )
+    def safe_call(self):
+        return  ', '.join(self.context.listContributors() )
 
 
 class SubjectSubstitution(BaseSubstitution):
@@ -102,8 +112,8 @@ class SubjectSubstitution(BaseSubstitution):
     category = _(u'Dublin Core')
     description = _(u'Subject')
 
-    def __call__(self):
-        return safe_unicode( ', '.join(self.context.Subject()) )
+    def safe_call(self):
+        return  ', '.join(self.context.Subject() )
 #
 
 
@@ -113,8 +123,8 @@ class FormatSubstitution(BaseSubstitution):
     category = _(u'Dublin Core')
     description = _(u'Format')
 
-    def __call__(self):
-        return safe_unicode( self.context.Format() )
+    def safe_call(self):
+        return  self.context.Format( )
 #
 
 
@@ -124,8 +134,8 @@ class LanguageSubstitution(BaseSubstitution):
     category = _(u'Dublin Core')
     description = _(u'Language')
 
-    def __call__(self):
-        return safe_unicode( self.context.Language() )
+    def safe_call(self):
+        return  self.context.Language( )
 #
 
 
@@ -135,8 +145,8 @@ class IdentifierSubstitution(BaseSubstitution):
     category = _(u'Dublin Core')
     description = _(u'Identifier')
 
-    def __call__(self):
-        return safe_unicode( self.context.Identifier() )
+    def safe_call(self):
+        return  self.context.Identifier()
 #
 
 
@@ -146,8 +156,8 @@ class RightsSubstitution(BaseSubstitution):
     category = _(u'Dublin Core')
     description = _(u'Rights')
 
-    def __call__(self):
-        return safe_unicode( self.context.Rights() )
+    def safe_call(self):
+        return  self.context.Rights()
 #
 
 
@@ -157,9 +167,9 @@ class ReviewStateSubstitution(BaseSubstitution):
     category = _(u'Workflow')
     description = _(u'Review State')
 
-    def __call__(self):
+    def safe_call(self):
         wft = getToolByName(self.context, 'portal_workflow')
-        return safe_unicode(wft.getInfoFor(self.context, 'review_state'))
+        return wft.getInfoFor(self.context, 'review_state')
 
 
 class DateSubstitution(BaseSubstitution):
@@ -179,7 +189,7 @@ class CreatedSubstitution(DateSubstitution):
     category = _(u'Dublin Core')
     description = _(u'Date Created')
 
-    def __call__(self):
+    def safe_call(self):
         return self.formatDate(self.context.created())
 
 
@@ -189,7 +199,7 @@ class EffectiveSubstitution(DateSubstitution):
     category = _(u'Dublin Core')
     description = _(u'Date Effective')
 
-    def __call__(self):
+    def safe_call(self):
         return self.formatDate(self.context.effective())
 
 
@@ -199,7 +209,7 @@ class ExpiresSubstitution(DateSubstitution):
     category = _(u'Dublin Core')
     description = _(u'Date Expires')
 
-    def __call__(self):
+    def safe_call(self):
         return self.formatDate(self.context.expires())
 
 
@@ -209,7 +219,7 @@ class ModifiedSubstitution(DateSubstitution):
     category = _(u'Dublin Core')
     description = _(u'Date Modified')
 
-    def __call__(self):
+    def safe_call(self):
         return self.formatDate(self.context.modified())
 
 
@@ -241,7 +251,7 @@ class MemberSubstitution(BaseSubstitution):
         for member in members:
             prop = member.getProperty(propname, None)
             if prop:
-                pset.add(safe_unicode(prop))
+                pset.add(prop)
         return pset
         
     def getPropsForIds(self, ids, propname):
@@ -274,7 +284,7 @@ class OwnerEmailSubstitution(MailAddressSubstitution):
     category = _(u'E-Mail Addresses')
     description = _(u'Owners')
 
-    def __call__(self):
+    def safe_call(self):
         return self.getEmailsForRole('Owner')
         
 #
@@ -285,7 +295,7 @@ class ReviewerEmailSubstitution(MailAddressSubstitution):
     category = _(u'E-Mail Addresses')
     description = _(u'Reviewers')
 
-    def __call__(self):
+    def safe_call(self):
         return self.getEmailsForRole('Reviewer')
         
 #
@@ -296,7 +306,7 @@ class ManagerEmailSubstitution(MailAddressSubstitution):
     category = _(u'E-Mail Addresses')
     description = _(u'Managers')
 
-    def __call__(self):
+    def safe_call(self):
         return self.getEmailsForRole('Manager')
         
 #
@@ -307,7 +317,7 @@ class MemberEmailSubstitution(MailAddressSubstitution):
     category = _(u'E-Mail Addresses')
     description = _(u'Members')
 
-    def __call__(self):
+    def safe_call(self):
         return self.getEmailsForRole('Member')
         
 #
@@ -319,14 +329,14 @@ class UserEmailSubstitution(BaseSubstitution):
     category = _(u'Current User')
     description = _(u'E-Mail Address')
     
-    def __call__(self):
+    def safe_call(self):
         pm = getToolByName(self.context, "portal_membership")
         if not pm.isAnonymousUser():
             user = pm.getAuthenticatedMember()
             if user is not None:
                 email = user.getProperty('email', None)
                 if email:
-                    return safe_unicode(email)
+                    return email
         return u''
 #
 
@@ -337,14 +347,14 @@ class UserFullNameSubstitution(BaseSubstitution):
     category = _(u'Current User')
     description = _(u'Full Name')
     
-    def __call__(self):
+    def safe_call(self):
         pm = getToolByName(self.context, "portal_membership")
         if not pm.isAnonymousUser():
             user = pm.getAuthenticatedMember()
             if user is not None:
                 fname = user.getProperty('fullname', None)
                 if fname:
-                    return safe_unicode(fname)
+                    return fname
         return u''
 #
 
@@ -355,12 +365,12 @@ class UserIdSubstitution(BaseSubstitution):
     category = _(u'Current User')
     description = _(u'Id')
     
-    def __call__(self):
+    def safe_call(self):
         pm = getToolByName(self.context, "portal_membership")
         if not pm.isAnonymousUser():
             user = pm.getAuthenticatedMember()
             if user is not None:
-                return safe_unicode(user.getId())
+                return user.getId()
         return u''
 #
 
@@ -375,7 +385,8 @@ def _lastChange(request, context):
         return last_revision
     elif not last_revision:
         return workflow_change
-    if workflow_change['time'] > last_revision['time']:
+    if workflow_change and last_revision and \
+       workflow_change.get('time') > last_revision.get('time'):
         return workflow_change
     return last_revision
 
@@ -384,7 +395,7 @@ def _lastWorkflowChange(context):
     try:
         review_history = workflow.getInfoFor(context, 'review_history')
     except WorkflowException:
-        return None
+        return {}
     
     # filter out automatic transitions.
     review_history = [r for r in review_history if r['action']]
@@ -396,7 +407,7 @@ def _lastWorkflowChange(context):
             workflow.getTitleForTransitionOnType(r['action'], context.portal_type)
         r['actorid'] = r['actor']
     else:
-        r = None
+        r = {}
     return r
 
 def _lastRevision(context):
@@ -404,10 +415,13 @@ def _lastRevision(context):
     rt = getToolByName(context, "portal_repository")
     pa = getToolByName(context, 'portal_archivist')
     if rt.isVersionable(context):
-        history = pa.getHistoryMetadata(context)
+        history = rt.getHistoryMetadata(context)
         if history:
-            history = ImplicitAcquisitionWrapper(history, pa)
-            meta = history.retrieve(history.getLength(countPurged=False)-1, countPurged=False)['metadata']['sys_metadata']
+            # history = ImplicitAcquisitionWrapper(history, pa)
+            meta = history.retrieve(
+               history.getLength(countPurged=False)-1, 
+               countPurged=False
+              )['metadata']['sys_metadata']
             return dict(type='versioning',
                     action=_(u"edit"),
                     transition_title=_(u"Edit"),
@@ -416,14 +430,14 @@ def _lastRevision(context):
                     comments=meta['comment'],
                     review_state=meta["review_state"],
                     )
-    return None
+    return {}
 
 # a base class for substitutions that use
 # last revision or workflow information
 class ChangeSubstitution(BaseSubstitution):
 
     def lastChangeMetadata(self, id):
-        return safe_unicode(_lastChange(self.context.REQUEST, self.context).get(id, ''))
+        return  _lastChange(self.context.REQUEST, self.context).get(id, '')
 #
 
 
@@ -434,7 +448,7 @@ class LastChangeCommentSubstitution(ChangeSubstitution):
     category = _(u'History')
     description = _(u'Comment')
 
-    def __call__(self):
+    def safe_call(self):
         return self.lastChangeMetadata('comments')
 #
 
@@ -445,7 +459,7 @@ class LastChangeTitleSubstitution(ChangeSubstitution):
     category = _(u'History')
     description = _(u'Transition title')
 
-    def __call__(self):
+    def safe_call(self):
         return self.lastChangeMetadata('transition_title')
 #
 
@@ -455,7 +469,7 @@ class LastChangeTypeSubstitution(ChangeSubstitution):
     category = _(u'History')
     description = _(u'Change type')
 
-    def __call__(self):
+    def safe_call(self):
         return self.lastChangeMetadata('type')
 #
 
@@ -465,6 +479,6 @@ class LastChangeActorIdSubstitution(ChangeSubstitution):
     category = _(u'History')
     description = _(u'Change author')
 
-    def __call__(self):
+    def safe_call(self):
         return self.lastChangeMetadata('actorid')
 #

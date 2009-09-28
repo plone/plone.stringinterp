@@ -12,6 +12,8 @@ import string
 from zope.interface import implements
 from zope.component import adapts, getAdapter, ComponentLookupError
 
+from AccessControl import Unauthorized
+
 from Products.CMFCore.interfaces import IContentish
 
 from interfaces import IStringSubstitution, IStringInterpolator
@@ -34,6 +36,8 @@ class LazyDict(object):
                     res = getAdapter(self.context, IStringSubstitution, key)()
                 except ComponentLookupError:
                     res = _marker
+                except Unauthorized:
+                    res = u'Unauthorized'
                 self._cache[key] = res
             if res != _marker:
                 return res

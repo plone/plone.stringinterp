@@ -34,7 +34,7 @@ Test caching scheme
     u'one two three Welcome to Plone http://nohost/plone/front-page ${nonesuch}'
 
     >>> interpolator._ldict._cache
-    {'url': 'http://nohost/plone/front-page', 'nonesuch': u'_bad_', 'title': u'Welcome to Plone'}
+    {'url': u'http://nohost/plone/front-page', 'nonesuch': u'_bad_', 'title': u'Welcome to Plone'}
 
 Directly change cache
 

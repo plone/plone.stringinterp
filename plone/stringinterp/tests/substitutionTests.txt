@@ -75,12 +75,12 @@ Ask for an adapter to get the URL::
     <plone.stringinterp.adapters.UrlSubstitution object at ...>
 
     >>> adapter()
-    'http://nohost/plone/front-page'
+    u'http://nohost/plone/front-page'
 
 'url' is an alias for absolute_url::
 
     >>> getAdapter(apage, IStringSubstitution, 'url')()
-    'http://nohost/plone/front-page'
+    u'http://nohost/plone/front-page'
 
 
 
@@ -233,14 +233,24 @@ IContentish -- info on last change, workflow or version
 
 Inspect a version change (the most recent change)
 
+    >>> self.setRoles( ['Owner',] )
+
+Initial revision
+
     >>> getAdapter(apage, IStringSubstitution, 'change_comment')()
     u'Initial revision'
+
+Change title
     
     >>> getAdapter(apage, IStringSubstitution, 'change_title')()
     u'Edit'
 
+Change type
+
     >>> getAdapter(apage, IStringSubstitution, 'change_type')()
     u'versioning'
+
+Change author
 
     >>> getAdapter(apage, IStringSubstitution, 'change_authorid')()
     u'portal_owner'
@@ -249,32 +259,45 @@ Let's prove that the very expensive fetching of the change data
 is cached. To do so, I'll publish the item and check that the
 last change comment is unchanged.
 
+    >>> self.setRoles( ['Owner','Reviewer'] )
     >>> wf_tool = self.portal.portal_workflow
-    >>> self.loginAsPortalOwner()
     >>> wf_tool.doActionFor(apage, 'publish', comment='publish it!')
+
     >>> getAdapter(apage, IStringSubstitution, 'change_comment')()
     u'Initial revision'
 
-TODO: Induce a workflow change, which will become the most recent change.
-TODO: 
-TODO: These are going to produce errors until I bypass
-TODO: the cache by using a different object
-TODO: 
-TODO:     >>> wf_tool = self.portal.portal_workflow
-TODO:     >>> self.loginAsPortalOwner()
-TODO:     >>> wf_tool.doActionFor(apage, 'publish', comment='publish it!')
-TODO:     >>> getAdapter(apage, IStringSubstitution, 'review_state')()
-TODO:     u'published'
-TODO: 
-TODO:     >>> getAdapter(apage, IStringSubstitution, 'change_comment')()
-TODO:     u'publish it!'
-TODO: 
-TODO:     >>> getAdapter(apage, IStringSubstitution, 'change_title')()
-TODO:     u'Publish'
-TODO: 
-TODO:     >>> getAdapter(apage, IStringSubstitution, 'change_type')()
-TODO:     u'workflow'
-TODO: 
-TODO:     >>> getAdapter(apage, IStringSubstitution, 'change_authorid')()
-TODO:     u'portal_owner'
+Let's create a new object in order to bypass the caching; we'll
+use it to test a workflow change
+
+    >>> self.portal.invokeFactory('Document', 'target')
+    'target'
+    
+    >>> apage = self.portal['target']
+    >>> wf_tool = self.portal.portal_workflow
+    >>> wf_tool.doActionFor(apage, 'publish', comment='publish it!')
+
+Review state
+
+    >>> getAdapter(apage, IStringSubstitution, 'review_state')()
+    u'published'
+
+Comment
+
+    >>> getAdapter(apage, IStringSubstitution, 'change_comment')()
+    u'publish it!'
+
+Change title
+
+    >>> getAdapter(apage, IStringSubstitution, 'change_title')()
+    u'Publish'
+
+Change type
+
+    >>> getAdapter(apage, IStringSubstitution, 'change_type')()
+    u'workflow'
+
+Change author
+
+    >>> getAdapter(apage, IStringSubstitution, 'change_authorid')()
+    u'test_user_1_'
 
