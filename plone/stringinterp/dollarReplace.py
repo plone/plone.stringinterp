@@ -21,15 +21,16 @@ from interfaces import IStringSubstitution, IStringInterpolator
 
 _marker = u'_bad_'
 
+
 class LazyDict(object):
     """ cached lookup via adapter """
-    
+
     def __init__(self, context):
         self.context = context
         self._cache = {}
 
     def __getitem__(self, key):
-        if key and key[0] not in ['_','.']:
+        if key and key[0] not in ['_', '.']:
             res = self._cache.get(key)
             if res is None:
                 try:

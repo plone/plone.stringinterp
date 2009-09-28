@@ -11,14 +11,13 @@ from zope.interface import implements
 from zope.component import adapts
 
 from AccessControl import Unauthorized
-from Acquisition import ImplicitAcquisitionWrapper, aq_inner
+from Acquisition import aq_inner
 
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.interfaces import \
     IContentish, IMinimalDublinCore, IWorkflowAware, IDublinCore, \
     ICatalogableDublinCore
 
-from Products.CMFEditions.interfaces import IVersioned
 from Products.CMFCore.WorkflowCore import WorkflowException
 
 from Products.CMFPlone.utils import safe_unicode
@@ -33,26 +32,26 @@ from plone.stringinterp import _
 
 class BaseSubstitution(object):
     implements(IStringSubstitution)
-    
+
     def __init__(self, context):
         self.context = context
-    
+
     # __call__ is a wrapper for the subclassed
     # adapter's actual substitution that makes sure we're
     # not generating unauth exceptions or returning non-unicode.
     def __call__(self):
         try:
-            return safe_unicode( self.safe_call() )
+            return safe_unicode(self.safe_call())
         except Unauthorized:
             return _(u'Unauthorized')
-        
+
 
 class UrlSubstitution(BaseSubstitution):
     adapts(IContentish)
-    
+
     category = _(u'All Content')
     description = _(u'URL')
-    
+
     def safe_call(self):
         return self.context.absolute_url()
 
@@ -86,6 +85,7 @@ class TypeSubstitution(BaseSubstitution):
     def safe_call(self):
         return self.context.Type()
 
+
 class CreatorsSubstitution(BaseSubstitution):
     adapts(IDublinCore)
 
@@ -93,7 +93,7 @@ class CreatorsSubstitution(BaseSubstitution):
     description = _(u'Creators')
 
     def safe_call(self):
-        return  ', '.join(self.context.listCreators() )
+        return  ', '.join(self.context.listCreators())
 
 
 class ContributorsSubstitution(BaseSubstitution):
@@ -103,7 +103,7 @@ class ContributorsSubstitution(BaseSubstitution):
     description = _(u'Contributors')
 
     def safe_call(self):
-        return  ', '.join(self.context.listContributors() )
+        return  ', '.join(self.context.listContributors())
 
 
 class SubjectSubstitution(BaseSubstitution):
@@ -113,8 +113,7 @@ class SubjectSubstitution(BaseSubstitution):
     description = _(u'Subject')
 
     def safe_call(self):
-        return  ', '.join(self.context.Subject() )
-#
+        return  ', '.join(self.context.Subject())
 
 
 class FormatSubstitution(BaseSubstitution):
@@ -124,7 +123,7 @@ class FormatSubstitution(BaseSubstitution):
     description = _(u'Format')
 
     def safe_call(self):
-        return  self.context.Format( )
+        return  self.context.Format()
 #
 
 
@@ -135,7 +134,7 @@ class LanguageSubstitution(BaseSubstitution):
     description = _(u'Language')
 
     def safe_call(self):
-        return  self.context.Language( )
+        return  self.context.Language()
 #
 
 
@@ -163,7 +162,7 @@ class RightsSubstitution(BaseSubstitution):
 
 class ReviewStateSubstitution(BaseSubstitution):
     adapts(IWorkflowAware)
-    
+
     category = _(u'Workflow')
     description = _(u'Review State')
 
@@ -177,15 +176,14 @@ class DateSubstitution(BaseSubstitution):
     def formatDate(self, adate):
         try:
             return safe_unicode(
-               ulocalized_time(adate, long_format=True, context=self.context)
-            )
+               ulocalized_time(adate, long_format=True, context=self.context))
         except ValueError:
             return u'???'
 
 
 class CreatedSubstitution(DateSubstitution):
     adapts(ICatalogableDublinCore)
-    
+
     category = _(u'Dublin Core')
     description = _(u'Date Created')
 
@@ -245,7 +243,7 @@ class MemberSubstitution(BaseSubstitution):
                 if group is not None:
                     members = members.union(group.getGroupMembers())
         return members
-    
+
     def getPropsForMembers(self, members, propname):
         pset = set()
         for member in members:
@@ -253,7 +251,7 @@ class MemberSubstitution(BaseSubstitution):
             if prop:
                 pset.add(prop)
         return pset
-        
+
     def getPropsForIds(self, ids, propname):
         return self.getPropsForMembers(self.getMembersFromIds(ids), propname)
 
@@ -261,74 +259,74 @@ class MemberSubstitution(BaseSubstitution):
 # A base class for all the role->email list adapters
 class MailAddressSubstitution(MemberSubstitution):
     adapts(IContentish)
-    
+
     def getEmailsForRole(self, role):
-        
+
         acl_users = getToolByName(self.context, "acl_users")
 
         # get a set of ids of members with the global role
         ids = set(acl_users.portal_role_manager.listAssignedPrincipals(role))
 
         # union with set of ids of members with the local role
-        ids |= set([id for id, irole 
+        ids |= set([id for id, irole
                        in acl_users._getAllLocalRoles(self.context).items()
                        if irole == role])
 
         return u', '.join(self.getPropsForIds(ids, 'email'))
 
-# 
+#
 
 
 class OwnerEmailSubstitution(MailAddressSubstitution):
-    
+
     category = _(u'E-Mail Addresses')
     description = _(u'Owners')
 
     def safe_call(self):
         return self.getEmailsForRole('Owner')
-        
+
 #
 
 
 class ReviewerEmailSubstitution(MailAddressSubstitution):
-    
+
     category = _(u'E-Mail Addresses')
     description = _(u'Reviewers')
 
     def safe_call(self):
         return self.getEmailsForRole('Reviewer')
-        
+
 #
 
 
 class ManagerEmailSubstitution(MailAddressSubstitution):
-    
+
     category = _(u'E-Mail Addresses')
     description = _(u'Managers')
 
     def safe_call(self):
         return self.getEmailsForRole('Manager')
-        
+
 #
 
 
 class MemberEmailSubstitution(MailAddressSubstitution):
-    
+
     category = _(u'E-Mail Addresses')
     description = _(u'Members')
 
     def safe_call(self):
         return self.getEmailsForRole('Member')
-        
+
 #
 
 
 class UserEmailSubstitution(BaseSubstitution):
     adapts(IContentish)
-    
+
     category = _(u'Current User')
     description = _(u'E-Mail Address')
-    
+
     def safe_call(self):
         pm = getToolByName(self.context, "portal_membership")
         if not pm.isAnonymousUser():
@@ -343,10 +341,10 @@ class UserEmailSubstitution(BaseSubstitution):
 
 class UserFullNameSubstitution(BaseSubstitution):
     adapts(IContentish)
-    
+
     category = _(u'Current User')
     description = _(u'Full Name')
-    
+
     def safe_call(self):
         pm = getToolByName(self.context, "portal_membership")
         if not pm.isAnonymousUser():
@@ -361,10 +359,10 @@ class UserFullNameSubstitution(BaseSubstitution):
 
 class UserIdSubstitution(BaseSubstitution):
     adapts(IContentish)
-    
+
     category = _(u'Current User')
     description = _(u'Id')
-    
+
     def safe_call(self):
         pm = getToolByName(self.context, "portal_membership")
         if not pm.isAnonymousUser():
@@ -396,7 +394,7 @@ def _lastWorkflowChange(context):
         review_history = workflow.getInfoFor(context, 'review_history')
     except WorkflowException:
         return {}
-    
+
     # filter out automatic transitions.
     review_history = [r for r in review_history if r['action']]
 
@@ -404,7 +402,9 @@ def _lastWorkflowChange(context):
         r = review_history[-1]
         r['type'] = 'workflow'
         r['transition_title'] = \
-            workflow.getTitleForTransitionOnType(r['action'], context.portal_type)
+            workflow.getTitleForTransitionOnType(
+             r['action'],
+             context.portal_type)
         r['actorid'] = r['actor']
     else:
         r = {}
@@ -419,8 +419,8 @@ def _lastRevision(context):
         if history:
             # history = ImplicitAcquisitionWrapper(history, pa)
             meta = history.retrieve(
-               history.getLength(countPurged=False)-1, 
-               countPurged=False
+               history.getLength(countPurged=False)-1,
+               countPurged=False,
               )['metadata']['sys_metadata']
             return dict(type='versioning',
                     action=_(u"edit"),
