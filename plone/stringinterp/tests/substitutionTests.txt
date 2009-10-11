@@ -16,7 +16,7 @@ Setup
     >>> apage.setContributors( ('contributor one', 'contributor two') )
     >>> apage.setLanguage( 'en' )
     >>> apage.setRights( 'copyright me' )
-
+    
     >>> from DateTime import DateTime
     >>> expires = DateTime(2009, 9, 9)
     >>> apage.setExpirationDate(expires)
@@ -234,11 +234,14 @@ IContentish -- info on last change, workflow or version
 Inspect a version change (the most recent change)
 
     >>> self.setRoles( ['Owner',] )
+    >>> from Products.CMFCore.utils import getToolByName
+    >>> pr = getToolByName(self.portal, 'portal_repository', None)
+    >>> pr.save(apage, 'change comment')
 
 Initial revision
 
     >>> getAdapter(apage, IStringSubstitution, 'change_comment')()
-    u'Initial revision'
+    u'change comment'
 
 Change title
     
@@ -253,7 +256,7 @@ Change type
 Change author
 
     >>> getAdapter(apage, IStringSubstitution, 'change_authorid')()
-    u'portal_owner'
+    u'test_user_1_'
 
 Let's prove that the very expensive fetching of the change data
 is cached. To do so, I'll publish the item and check that the
@@ -264,7 +267,7 @@ last change comment is unchanged.
     >>> wf_tool.doActionFor(apage, 'publish', comment='publish it!')
 
     >>> getAdapter(apage, IStringSubstitution, 'change_comment')()
-    u'Initial revision'
+    u'change comment'
 
 Let's create a new object in order to bypass the caching; we'll
 use it to test a workflow change
