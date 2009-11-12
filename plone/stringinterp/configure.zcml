@@ -12,7 +12,7 @@
    
 
     <adapter
-        for="Products.CMFCore.interfaces.IContentish"
+        for="zope.interface.Interface"
         provides="plone.stringinterp.interfaces.IStringInterpolator"
         factory=".dollarReplace.Interpolator"
     />
