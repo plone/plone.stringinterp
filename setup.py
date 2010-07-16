@@ -1,23 +1,25 @@
 from setuptools import setup, find_packages
-import os
 
-version = '1.0b1'
+version = '1.0'
 
 setup(name='plone.stringinterp',
       version=version,
       description="Adaptable string interpolation",
       long_description=open("README.txt").read() + "\n" +
-                       open(os.path.join("docs", "HISTORY.txt")).read(),
-      # Get more strings from http://www.python.org/pypi?%3Aaction=list_classifiers
+                       open("CHANGES.txt").read(),
       classifiers=[
-        "Programming Language :: Python",
-        "Topic :: Software Development :: Libraries :: Python Modules",
+          "Environment :: Web Environment",
+          "Framework :: Plone",
+          "Framework :: Zope2",
+          "License :: OSI Approved :: GNU General Public License (GPL)",
+          "Operating System :: OS Independent",
+          "Programming Language :: Python",
         ],
       keywords='Plone Zope Interpolation',
-      author='Steve McMahon',
+      author='Plone Foundation',
       author_email='plone-developers@lists.sourceforge.net',
-      url='http://svn.plone.org/svn/plone/plone.stringinterp',
-      license='GPL',
+      url='http://pypi.python.org/pypi/plone.stringinterp',
+      license='GPL version 2',
       packages=find_packages(exclude=['ez_setup']),
       namespace_packages=['plone'],
       include_package_data=True,
