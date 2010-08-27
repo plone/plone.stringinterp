@@ -9,26 +9,23 @@ Copyright (c) 2009 Plone Foundation.
 
 from zope.interface import implements
 from zope.component import adapts
+from zope.i18n import translate
 
 from AccessControl import Unauthorized
 from Acquisition import aq_inner
 
 from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.interfaces import \
-    IContentish, IMinimalDublinCore, IWorkflowAware, IDublinCore, \
-    ICatalogableDublinCore
-
+from Products.CMFCore.interfaces import (
+    IContentish, IMinimalDublinCore, IWorkflowAware, IDublinCore,
+    ICatalogableDublinCore)
 from Products.CMFCore.WorkflowCore import WorkflowException
-
 from Products.CMFPlone.utils import safe_unicode
 from Products.CMFPlone.i18nl10n import ulocalized_time
 
 from plone.memoize.request import memoize_diy_request
 
-from interfaces import IStringSubstitution
-
 from plone.stringinterp import _
-from zope.i18n import translate
+from plone.stringinterp.interfaces import IStringSubstitution
 
 
 class BaseSubstitution(object):

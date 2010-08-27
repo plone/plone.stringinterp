@@ -27,6 +27,7 @@ setup(name='plone.stringinterp',
       install_requires=[
           'setuptools',
           'Products.CMFCore',
+          'zope.i18n',
       ],
       entry_points="""
           [z3c.autoinclude.plugin]
