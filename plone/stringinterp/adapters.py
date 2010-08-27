@@ -266,11 +266,10 @@ class MailAddressSubstitution(MemberSubstitution):
 
         # get a set of ids of members with the global role
         ids = set(acl_users.portal_role_manager.listAssignedPrincipals(role))
-
         # union with set of ids of members with the local role
         ids |= set([id for id, irole
                        in acl_users._getAllLocalRoles(self.context).items()
-                       if irole == role])
+                       if role in irole])
 
         return u', '.join(self.getPropsForIds(ids, 'email'))
 

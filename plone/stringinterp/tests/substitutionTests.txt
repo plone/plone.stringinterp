@@ -11,12 +11,12 @@ Setup
     >>> from zope.component import getAdapter, queryAdapter, queryMultiAdapter
     >>> from plone.stringinterp.interfaces import IStringSubstitution, IStringSubstitutionInfo
     >>> apage = self.portal['front-page']
-    
+
     >>> apage.setSubject( ('keyword one', 'keyword two') )
     >>> apage.setContributors( ('contributor one', 'contributor two') )
     >>> apage.setLanguage( 'en' )
     >>> apage.setRights( 'copyright me' )
-    
+
     >>> from DateTime import DateTime
     >>> expires = DateTime(2009, 9, 9)
     >>> apage.setExpirationDate(expires)
@@ -31,6 +31,11 @@ Setup
     ...     self.portal.portal_membership.addMember(id, 'secret', roles, [])
     ...     member = self.portal.portal_membership.getMemberById(id)
     ...     member.setMemberProperties({'fullname': fname, 'email': email})
+    >>> apage_localusers = (
+    ... ('userfour', ('Reviewer',)),
+    ... )
+    >>> for id, localroles in apage_localusers:
+    ...     apage.manage_setLocalRoles(id, localroles)
     >>> self.portal.portal_membership.getAuthenticatedMember().setProperties(email='currentuser@foobar.com')
     >>> self.portal.portal_membership.getAuthenticatedMember().setProperties(fullname='Current User')
 
@@ -145,8 +150,8 @@ Keywords (alias for subject)
 
     >>> getAdapter(apage, IStringSubstitution, 'keywords')()
     u'keyword one, keyword two'
-    
-Format    
+
+Format
 
     >>> getAdapter(apage, IStringSubstitution, 'format')()
     u'text/html'
@@ -193,7 +198,7 @@ Expiration Date
 
 
 Modification Date
-    
+
     >>> result = getAdapter(apage, IStringSubstitution, 'modified')()
     >>> re.match(r'... \d\d, \d\d\d\d \d\d:\d\d .M$', result) is not None
     True
@@ -206,7 +211,7 @@ IContentish -- emails for members having a role on context
     u'user@three.com'
 
     >>> getAdapter(apage, IStringSubstitution, 'reviewer_emails')()
-    u'user@two.com'
+    u'user@two.com, user@four.com'
 
     >>> getAdapter(apage, IStringSubstitution, 'manager_emails')()
     u'user@one.com'
@@ -244,7 +249,7 @@ Initial revision
     u'change comment'
 
 Change title
-    
+
     >>> getAdapter(apage, IStringSubstitution, 'change_title')()
     u'Edit'
 
@@ -274,7 +279,7 @@ use it to test a workflow change
 
     >>> self.portal.invokeFactory('Document', 'target')
     'target'
-    
+
     >>> apage = self.portal['target']
     >>> wf_tool = self.portal.portal_workflow
     >>> wf_tool.doActionFor(apage, 'publish', comment='publish it!')
