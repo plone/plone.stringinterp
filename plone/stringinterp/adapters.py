@@ -28,6 +28,7 @@ from plone.memoize.request import memoize_diy_request
 from interfaces import IStringSubstitution
 
 from plone.stringinterp import _
+from zope.i18n import translate
 
 
 class BaseSubstitution(object):
@@ -83,7 +84,7 @@ class TypeSubstitution(BaseSubstitution):
     description = _(u'Content Type')
 
     def safe_call(self):
-        return self.context.Type()
+        return translate(self.context.Type(), context=self.context.REQUEST)
 
 
 class CreatorsSubstitution(BaseSubstitution):

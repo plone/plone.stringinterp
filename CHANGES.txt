@@ -4,6 +4,9 @@ Changelog
 1.0.1 - unreleased
 ------------------
 
+- Internationalized ${type} substitution.
+  [thomasdesvenain]
+
 - Fixed: get emails for role works with local roles.
   [thomasdesvenain]
 
