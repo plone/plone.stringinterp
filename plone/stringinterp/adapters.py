@@ -14,6 +14,7 @@ from zope.i18n import translate
 from AccessControl import Unauthorized
 from Acquisition import aq_inner
 
+from Products.PlonePAS.interfaces.group import IGroupData
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.interfaces import (
     IContentish, IMinimalDublinCore, IWorkflowAware, IDublinCore,
@@ -26,6 +27,7 @@ from plone.memoize.request import memoize_diy_request
 
 from plone.stringinterp import _
 from plone.stringinterp.interfaces import IStringSubstitution
+from zope.site.hooks import getSite
 
 
 class BaseSubstitution(object):
@@ -260,16 +262,51 @@ class MailAddressSubstitution(MemberSubstitution):
 
     def getEmailsForRole(self, role):
 
-        acl_users = getToolByName(self.context, "acl_users")
+        portal = getSite()
+        acl_users = portal.acl_users
 
         # get a set of ids of members with the global role
-        ids = set(acl_users.portal_role_manager.listAssignedPrincipals(role))
+        ids = set([p[0] for p in acl_users.portal_role_manager.listAssignedPrincipals(role)])
+
         # union with set of ids of members with the local role
         ids |= set([id for id, irole
                        in acl_users._getAllLocalRoles(self.context).items()
                        if role in irole])
 
-        return u', '.join(self.getPropsForIds(ids, 'email'))
+        # get members from group or member ids
+        members = _recursiveGetMembersFromIds(portal, ids)
+
+        # get emails
+        return u', '.join(self.getPropsForMembers(members, 'email'))
+
+
+def _recursiveGetMembersFromIds(portal, group_and_user_ids):
+    """ get members from a list of group and member ids """
+
+    gtool = portal.portal_groups
+    mtool = portal.portal_membership
+    members = set()
+
+    def recursiveGetGroupUsers(mtool, gtool, group):
+        users = set()
+        for group_or_user in group.getGroupMembers():
+            if IGroupData.providedBy(group_or_user):
+                users = users.union(recursiveGetGroupUsers(mtool, gtool, group_or_user))
+            else:
+                users.add(group_or_user)
+
+        return users
+
+    for group_or_user_id in group_and_user_ids:
+        _group = gtool.getGroupById(group_or_user_id)
+        if _group:
+            members = members.union(recursiveGetGroupUsers(mtool, gtool, _group))
+        else:
+            member = mtool.getMemberById(group_or_user_id)
+            members.add(member)
+
+    return members
+
 
 #
 

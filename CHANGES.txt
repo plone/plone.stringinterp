@@ -4,6 +4,9 @@ Changelog
 1.0.2 - Unreleased
 ------------------
 
+- Role email substitution works with user that have role through a group.
+  [tdesvenain]
+
 1.0.1 - 2010-09-15
 ------------------
 

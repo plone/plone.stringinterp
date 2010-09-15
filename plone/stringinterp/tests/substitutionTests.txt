@@ -20,17 +20,26 @@ Setup
     >>> from DateTime import DateTime
     >>> expires = DateTime(2009, 9, 9)
     >>> apage.setExpirationDate(expires)
-
-    >>> users = (
-    ... ('userone', 'User One', 'user@one.com',  ('Manager', 'Member')),
-    ... ('usertwo', 'User Two', 'user@two.com',  ('Reviewer', 'Member')),
-    ... ('userthree', 'User Three', 'user@three.com',  ('Owner', 'Member')),
-    ... ('userfour', 'User Four', 'user@four.com',  ('Member',)),
+    >>> groups = (
+    ... ('groupreviewers', ('Reviewer',)),
     ... )
-    >>> for id, fname, email, roles in users:
+    >>> users = (
+    ... ('userone', 'User One', 'user@one.com',  ('Manager', 'Member'), ()),
+    ... ('usertwo', 'User Two', 'user@two.com',  ('Member',), ('groupreviewers',)),
+    ... ('userthree', 'User Three', 'user@three.com',  ('Owner', 'Member'), ()),
+    ... ('userfour', 'User Four', 'user@four.com',  ('Member',), ()),
+    ... )
+    >>> self.loginAsPortalOwner()
+    >>> for id, roles in groups:
+    ...     foo = self.portal.portal_groups.addGroup(id, roles=roles)
+    >>> for id, fname, email, roles, groups in users:
     ...     self.portal.portal_membership.addMember(id, 'secret', roles, [])
     ...     member = self.portal.portal_membership.getMemberById(id)
     ...     member.setMemberProperties({'fullname': fname, 'email': email})
+    ...     for groupname in groups:
+    ...         group = self.portal.portal_groups.getGroupById(groupname)
+    ...         group.addMember(id)
+    >>> self.login('test_user_1_')
     >>> apage_localusers = (
     ... ('userfour', ('Reviewer',)),
     ... )
