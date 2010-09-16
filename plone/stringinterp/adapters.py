@@ -263,7 +263,7 @@ class MailAddressSubstitution(MemberSubstitution):
     def getEmailsForRole(self, role):
 
         portal = getSite()
-        acl_users = portal.acl_users
+        acl_users = getToolByName(portal, 'acl_users')
 
         # get a set of ids of members with the global role
         ids = set([p[0] for p in acl_users.portal_role_manager.listAssignedPrincipals(role)])
