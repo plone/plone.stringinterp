@@ -225,8 +225,10 @@ IContentish -- emails for members having a role on context
     >>> getAdapter(apage, IStringSubstitution, 'manager_emails')()
     u'user@one.com'
 
-    >>> getAdapter(apage, IStringSubstitution, 'member_emails')()
-    u'user@one.com, user@two.com, currentuser@foobar.com, user@three.com, user@four.com'
+    >>> sorted(getAdapter(apage, IStringSubstitution, 'member_emails')(
+    ...     ).split(', '))
+    [u'currentuser@foobar.com', u'user@four.com', u'user@one.com',
+     u'user@three.com', u'user@two.com']
 
 
 IContentish -- info on current user
