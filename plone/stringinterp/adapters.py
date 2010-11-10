@@ -292,7 +292,9 @@ def _recursiveGetMembersFromIds(portal, group_and_user_ids):
         for group_or_user in group.getGroupMembers():
             if IGroupData.providedBy(group_or_user):
                 users = users.union(recursiveGetGroupUsers(mtool, gtool, group_or_user))
-            else:
+            elif group_or_user is not None:
+                # Other group data PAS plugins might not filter no
+                # longer existing group members.
                 users.add(group_or_user)
 
         return users
@@ -303,7 +305,8 @@ def _recursiveGetMembersFromIds(portal, group_and_user_ids):
             members = members.union(recursiveGetGroupUsers(mtool, gtool, _group))
         else:
             member = mtool.getMemberById(group_or_user_id)
-            members.add(member)
+            if member is not None:
+                members.add(member)
 
     return members
 

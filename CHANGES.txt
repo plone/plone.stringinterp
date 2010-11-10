@@ -4,6 +4,10 @@ Changelog
 1.0.3 - Unreleased
 ------------------
 
+- Fix a bug with member email substitutions when a user has been
+  removed from acl_users.
+  [rossp]
+
 1.0.2 - 2010-09-20
 ------------------
 

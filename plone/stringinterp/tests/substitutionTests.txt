@@ -20,9 +20,7 @@ Setup
     >>> from DateTime import DateTime
     >>> expires = DateTime(2009, 9, 9)
     >>> apage.setExpirationDate(expires)
-    >>> groups = (
-    ... ('groupreviewers', ('Reviewer',)),
-    ... )
+    >>> groups = (('groupreviewers', ()),)
     >>> users = (
     ... ('userone', 'User One', 'user@one.com',  ('Manager', 'Member'), ()),
     ... ('usertwo', 'User Two', 'user@two.com',  ('Member',), ('groupreviewers',)),
@@ -39,6 +37,8 @@ Setup
     ...     for groupname in groups:
     ...         group = self.portal.portal_groups.getGroupById(groupname)
     ...         group.addMember(id)
+    >>> self.portal.portal_groups.getGroupById(
+    ...     'Reviewers').addMember('groupreviewers')
     >>> self.login('test_user_1_')
     >>> apage_localusers = (
     ... ('userfour', ('Reviewer',)),
@@ -230,6 +230,29 @@ IContentish -- emails for members having a role on context
     [u'currentuser@foobar.com', u'user@four.com', u'user@one.com',
      u'user@three.com', u'user@two.com']
 
+When a user is removed from the user folder, the ownership
+information, local roles, and group memberships for that user can
+remain even though there's no user object available.  The email
+adapters can handle this case.
+
+    >>> self.loginAsPortalOwner()
+    >>> self.portal.portal_membership.deleteMembers(
+    ...     ('usertwo', 'userthree'), delete_localroles=0)
+    ('usertwo', 'userthree')
+    >>> self.login()
+
+    >>> getAdapter(apage, IStringSubstitution, 'owner_emails')()
+    u''
+
+    >>> getAdapter(apage, IStringSubstitution, 'reviewer_emails')()
+    u'user@four.com'
+
+    >>> getAdapter(apage, IStringSubstitution, 'manager_emails')()
+    u'user@one.com'
+
+    >>> sorted(getAdapter(apage, IStringSubstitution, 'member_emails')(
+    ...     ).split(', '))
+    [u'currentuser@foobar.com', u'user@four.com', u'user@one.com']
 
 IContentish -- info on current user
 -----------------------------------
