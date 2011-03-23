@@ -16,11 +16,10 @@ from AccessControl import Unauthorized
 
 from Products.CMFCore.interfaces import IContentish
 
-from interfaces import IStringSubstitution, IStringInterpolator
+from plone.stringinterp.interfaces import IStringSubstitution, IStringInterpolator
 
 
 _marker = u'_bad_'
-
 
 class LazyDict(object):
     """ cached lookup via adapter """
@@ -39,9 +38,12 @@ class LazyDict(object):
                     res = _marker
                 except Unauthorized:
                     res = u'Unauthorized'
+
                 self._cache[key] = res
+
             if res != _marker:
                 return res
+
         raise KeyError(key)
 
 

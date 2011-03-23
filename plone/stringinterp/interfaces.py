@@ -31,7 +31,7 @@ class IStringInterpolator(Interface):
         interpolated string
     """
 
-    def __call__(s):
+    def __call__():
         """
             return interpolated string
         """

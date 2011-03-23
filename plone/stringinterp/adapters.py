@@ -10,6 +10,7 @@ Copyright (c) 2009 Plone Foundation.
 from zope.interface import implements
 from zope.component import adapts
 from zope.i18n import translate
+from zope.site.hooks import getSite
 
 from AccessControl import Unauthorized
 from Acquisition import aq_inner
@@ -27,7 +28,6 @@ from plone.memoize.request import memoize_diy_request
 
 from plone.stringinterp import _
 from plone.stringinterp.interfaces import IStringSubstitution
-from zope.site.hooks import getSite
 
 
 class BaseSubstitution(object):
@@ -124,7 +124,6 @@ class FormatSubstitution(BaseSubstitution):
 
     def safe_call(self):
         return  self.context.Format()
-#
 
 
 class LanguageSubstitution(BaseSubstitution):
@@ -135,7 +134,6 @@ class LanguageSubstitution(BaseSubstitution):
 
     def safe_call(self):
         return  self.context.Language()
-#
 
 
 class IdentifierSubstitution(BaseSubstitution):
@@ -146,7 +144,6 @@ class IdentifierSubstitution(BaseSubstitution):
 
     def safe_call(self):
         return  self.context.Identifier()
-#
 
 
 class RightsSubstitution(BaseSubstitution):
@@ -157,7 +154,6 @@ class RightsSubstitution(BaseSubstitution):
 
     def safe_call(self):
         return  self.context.Rights()
-#
 
 
 class ReviewStateSubstitution(BaseSubstitution):
@@ -219,7 +215,6 @@ class ModifiedSubstitution(DateSubstitution):
 
     def safe_call(self):
         return self.formatDate(self.context.modified())
-
 
 
 # A base class for adapters that need member information
@@ -311,9 +306,6 @@ def _recursiveGetMembersFromIds(portal, group_and_user_ids):
     return members
 
 
-#
-
-
 class OwnerEmailSubstitution(MailAddressSubstitution):
 
     category = _(u'E-Mail Addresses')
@@ -321,8 +313,6 @@ class OwnerEmailSubstitution(MailAddressSubstitution):
 
     def safe_call(self):
         return self.getEmailsForRole('Owner')
-
-#
 
 
 class ReviewerEmailSubstitution(MailAddressSubstitution):
@@ -333,8 +323,6 @@ class ReviewerEmailSubstitution(MailAddressSubstitution):
     def safe_call(self):
         return self.getEmailsForRole('Reviewer')
 
-#
-
 
 class ManagerEmailSubstitution(MailAddressSubstitution):
 
@@ -344,8 +332,6 @@ class ManagerEmailSubstitution(MailAddressSubstitution):
     def safe_call(self):
         return self.getEmailsForRole('Manager')
 
-#
-
 
 class MemberEmailSubstitution(MailAddressSubstitution):
 
@@ -354,8 +340,6 @@ class MemberEmailSubstitution(MailAddressSubstitution):
 
     def safe_call(self):
         return self.getEmailsForRole('Member')
-
-#
 
 
 class UserEmailSubstitution(BaseSubstitution):
@@ -373,7 +357,6 @@ class UserEmailSubstitution(BaseSubstitution):
                 if email:
                     return email
         return u''
-#
 
 
 class UserFullNameSubstitution(BaseSubstitution):
@@ -391,7 +374,6 @@ class UserFullNameSubstitution(BaseSubstitution):
                 if fname:
                     return fname
         return u''
-#
 
 
 class UserIdSubstitution(BaseSubstitution):
@@ -407,7 +389,6 @@ class UserIdSubstitution(BaseSubstitution):
             if user is not None:
                 return user.getId()
         return u''
-#
 
 
 # memoize on the request an expensive function called by the
@@ -420,10 +401,13 @@ def _lastChange(request, context):
         return last_revision
     elif not last_revision:
         return workflow_change
+
     if workflow_change and last_revision and \
        workflow_change.get('time') > last_revision.get('time'):
         return workflow_change
+
     return last_revision
+
 
 def _lastWorkflowChange(context):
     workflow = getToolByName(context, 'portal_workflow')
@@ -445,12 +429,13 @@ def _lastWorkflowChange(context):
         r['actorid'] = r['actor']
     else:
         r = {}
+
     return r
+
 
 def _lastRevision(context):
     context = aq_inner(context)
     rt = getToolByName(context, "portal_repository")
-    pa = getToolByName(context, 'portal_archivist')
     if rt.isVersionable(context):
         history = rt.getHistoryMetadata(context)
         if history:
@@ -467,7 +452,9 @@ def _lastRevision(context):
                     comments=meta['comment'],
                     review_state=meta["review_state"],
                     )
+
     return {}
+
 
 # a base class for substitutions that use
 # last revision or workflow information
@@ -475,8 +462,6 @@ class ChangeSubstitution(BaseSubstitution):
 
     def lastChangeMetadata(self, id):
         return  _lastChange(self.context.REQUEST, self.context).get(id, '')
-#
-
 
 
 class LastChangeCommentSubstitution(ChangeSubstitution):
@@ -487,7 +472,6 @@ class LastChangeCommentSubstitution(ChangeSubstitution):
 
     def safe_call(self):
         return self.lastChangeMetadata('comments')
-#
 
 
 class LastChangeTitleSubstitution(ChangeSubstitution):
@@ -498,7 +482,7 @@ class LastChangeTitleSubstitution(ChangeSubstitution):
 
     def safe_call(self):
         return self.lastChangeMetadata('transition_title')
-#
+
 
 class LastChangeTypeSubstitution(ChangeSubstitution):
     adapts(IContentish)
@@ -508,7 +492,7 @@ class LastChangeTypeSubstitution(ChangeSubstitution):
 
     def safe_call(self):
         return self.lastChangeMetadata('type')
-#
+
 
 class LastChangeActorIdSubstitution(ChangeSubstitution):
     adapts(IContentish)
@@ -518,4 +502,3 @@ class LastChangeActorIdSubstitution(ChangeSubstitution):
 
     def safe_call(self):
         return self.lastChangeMetadata('actorid')
-#

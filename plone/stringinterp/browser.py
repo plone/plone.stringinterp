@@ -11,8 +11,7 @@ from zope.component import getGlobalSiteManager
 
 from Products.Five import BrowserView
 
-from interfaces import IStringSubstitution
-
+from plone.stringinterp.interfaces import IStringSubstitution
 from plone.stringinterp import _
 
 
