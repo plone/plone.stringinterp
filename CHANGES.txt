@@ -4,6 +4,9 @@ Changelog
 1.0.4 - Unreleased
 ------------------
 
+- Added contributor_emails and reader_emails substitution variables.
+  [thomasdesvenain]
+
 1.0.3 - 2010-11-11
 ------------------
 
@@ -15,7 +18,7 @@ Changelog
 ------------------
 
 - Role email substitution works with user that have role through a group.
-  [tdesvenain]
+  [thomasdesvenain]
 
 1.0.1 - 2010-09-15
 ------------------

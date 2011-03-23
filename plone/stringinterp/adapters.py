@@ -324,6 +324,24 @@ class ReviewerEmailSubstitution(MailAddressSubstitution):
         return self.getEmailsForRole('Reviewer')
 
 
+class ReaderEmailSubstitution(MailAddressSubstitution):
+
+    category = _(u'E-Mail Addresses')
+    description = _(u'Readers')
+
+    def safe_call(self):
+        return self.getEmailsForRole('Reader')
+
+
+class ContributorEmailSubstitution(MailAddressSubstitution):
+
+    category = _(u'E-Mail Addresses')
+    description = _(u'Contributors')
+
+    def safe_call(self):
+        return self.getEmailsForRole('Contributor')
+
+
 class ManagerEmailSubstitution(MailAddressSubstitution):
 
     category = _(u'E-Mail Addresses')

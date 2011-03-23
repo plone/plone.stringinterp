@@ -9,7 +9,7 @@
         allowed_interface=".interfaces.IStringSubstitutionInfo"
         permission="zope.Public"
     />
-   
+
 
     <adapter
         for="zope.interface.Interface"
@@ -154,6 +154,20 @@
         provides="plone.stringinterp.interfaces.IStringSubstitution"
         factory=".adapters.ReviewerEmailSubstitution"
         name="reviewer_emails"
+    />
+
+    <adapter
+        for="Products.CMFCore.interfaces.IContentish"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.ReaderEmailSubstitution"
+        name="reader_emails"
+    />
+
+    <adapter
+        for="Products.CMFCore.interfaces.IContentish"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.ContributorEmailSubstitution"
+        name="contributor_emails"
     />
 
     <adapter
