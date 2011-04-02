@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0.4 - Unreleased
+1.0.4 - 2011-04-01
 ------------------
 
 - Added contributor_emails and reader_emails substitution variables.
