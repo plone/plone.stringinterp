@@ -1,14 +1,20 @@
 Changelog
 =========
 
+
 1.0.5 - Unreleased
 ------------------
+
+- Add MANIFEST.in
+  [WouterVH]
+
 
 1.0.4 - 2011-04-01
 ------------------
 
 - Added contributor_emails and reader_emails substitution variables.
   [thomasdesvenain]
+
 
 1.0.3 - 2010-11-11
 ------------------
@@ -17,11 +23,13 @@ Changelog
   removed from acl_users.
   [rossp]
 
+
 1.0.2 - 2010-09-20
 ------------------
 
 - Role email substitution works with user that have role through a group.
   [thomasdesvenain]
+
 
 1.0.1 - 2010-09-15
 ------------------
@@ -32,11 +40,13 @@ Changelog
 - Fixed: get emails for role works with local roles.
   [thomasdesvenain]
 
+
 1.0 - 2010-07-18
 ----------------
 
 - Update license to GPL version 2 only.
   [hannosch]
+
 
 1.0b1 - 2009-11-12
 ------------------
