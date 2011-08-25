@@ -5,6 +5,10 @@ Changelog
 1.0.5 - Unreleased
 ------------------
 
+- Recursive get members works in a non wrapped context
+  (when getting PloneGroups instead of GroupData from GroupTool)
+  [thomasdesvenain]
+
 - Add MANIFEST.in
   [WouterVH]
 
