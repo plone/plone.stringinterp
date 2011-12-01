@@ -278,8 +278,8 @@ class MailAddressSubstitution(MemberSubstitution):
 def _recursiveGetMembersFromIds(portal, group_and_user_ids):
     """ get members from a list of group and member ids """
 
-    gtool = portal.portal_groups
-    mtool = portal.portal_membership
+    gtool = getToolByName(portal, 'portal_groups')
+    mtool = getToolByName(portal, 'portal_membership')
     members = set()
 
     def recursiveGetGroupUsers(mtool, gtool, group):
