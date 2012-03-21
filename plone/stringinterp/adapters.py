@@ -13,7 +13,7 @@ from zope.i18n import translate
 from zope.site.hooks import getSite
 
 from AccessControl import Unauthorized
-from Acquisition import aq_inner
+from Acquisition import aq_inner, aq_parent
 
 from Products.PlonePAS.interfaces.group import IGroupData
 from Products.CMFCore.utils import getToolByName
@@ -54,6 +54,15 @@ class UrlSubstitution(BaseSubstitution):
 
     def safe_call(self):
         return self.context.absolute_url()
+
+
+class ParentUrlSubstitution(BaseSubstitution):
+
+    category = _(u'All Content')
+    description = _u("Folder URL")
+
+    def safe_call(self):
+        return aq_parent(aq_inner(self.context)).absolute_url()
 
 
 class TitleSubstitution(BaseSubstitution):
@@ -526,3 +535,4 @@ class LastChangeActorIdSubstitution(ChangeSubstitution):
 
     def safe_call(self):
         return self.lastChangeMetadata('actorid')
+
