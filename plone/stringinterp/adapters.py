@@ -59,7 +59,7 @@ class UrlSubstitution(BaseSubstitution):
 class ParentUrlSubstitution(BaseSubstitution):
 
     category = _(u'All Content')
-    description = _u("Folder URL")
+    description = _(u"Folder URL")
 
     def safe_call(self):
         return aq_parent(aq_inner(self.context)).absolute_url()
