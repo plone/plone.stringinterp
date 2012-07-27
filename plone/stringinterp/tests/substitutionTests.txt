@@ -97,6 +97,10 @@ Ask for an adapter to get the URL::
     >>> getAdapter(apage, IStringSubstitution, 'url')()
     u'http://nohost/plone/front-page'
 
+'parent_url' is container url::
+
+    >>> getAdapter(apage, IStringSubstitution, 'url')()
+    u'http://nohost/plone'
 
 
 Minimal Dublin Core
