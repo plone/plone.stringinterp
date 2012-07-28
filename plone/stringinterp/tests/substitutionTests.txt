@@ -99,7 +99,7 @@ Ask for an adapter to get the URL::
 
 'parent_url' is container url::
 
-    >>> getAdapter(apage, IStringSubstitution, 'url')()
+    >>> getAdapter(apage, IStringSubstitution, 'parent_url')()
     u'http://nohost/plone'
 
 
