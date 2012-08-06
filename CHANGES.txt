@@ -5,6 +5,9 @@ Changelog
 1.0.7 (unreleased)
 ------------------
 
+- Fixed user_fullname substitution : display user id if fullname is not set.
+  [thomasdesvenain]
+
 - Do not restrict string interpolation to IContentish if not necessary.
   Fixes email content rule related with plone.app.discussion comments.
   Refs https://dev.plone.org/ticket/13047

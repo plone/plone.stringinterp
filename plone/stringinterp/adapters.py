@@ -406,6 +406,9 @@ class UserFullNameSubstitution(BaseSubstitution):
                 fname = user.getProperty('fullname', None)
                 if fname:
                     return fname
+                else:
+                    return user.getId()
+
         return u''
 
 
