@@ -5,7 +5,10 @@ Changelog
 1.0.7 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Do not restrict string interpolation to IContentish if not necessary.
+  Fixes email content rule related with plone.app.discussion comments.
+  Refs https://dev.plone.org/ticket/13047
+  [thomasdesvenain]
 
 
 1.0.6 (2012-08-04)
