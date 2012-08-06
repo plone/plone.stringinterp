@@ -42,6 +42,12 @@
        factory=".adapters.TitleSubstitution"
        name="title"
        />
+   <adapter
+       for="*"
+       provides="plone.stringinterp.interfaces.IStringSubstitution"
+       factory=".adapters.ParentTitleSubstitution"
+       name="parent_title"
+       />
     <adapter
         for="Products.CMFCore.interfaces.IMinimalDublinCore"
         provides="plone.stringinterp.interfaces.IStringSubstitution"

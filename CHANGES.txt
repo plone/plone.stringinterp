@@ -5,6 +5,9 @@ Changelog
 1.0.7 (unreleased)
 ------------------
 
+- Added parent_title substitution, which gets the title of the container.
+  [thomasdesvenain]
+
 - Fixed user_fullname substitution : display user id if fullname is not set.
   [thomasdesvenain]
 

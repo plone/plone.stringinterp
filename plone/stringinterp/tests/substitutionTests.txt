@@ -111,6 +111,11 @@ Title
     >>> getAdapter(apage, IStringSubstitution, 'title')()
     u'Welcome to Plone'
 
+Parent title
+
+    >>> getAdapter(apage, IStringSubstitution, 'parent_title')()
+    u'Plone site'
+
 
 The rest of Minimal Dublin::
 
