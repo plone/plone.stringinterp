@@ -19,7 +19,7 @@ for your context. The adapter name is used for the lookup.
 Dependencies
 ============
 
-Dependencies are all in the CMF* namespace, so this theoretically useful
+Dependencies are all in the CMF* namespace, so this is theoretically useful
 outside Plone. It does use the 'plone' identifier for the message factory.
 
 
@@ -85,6 +85,7 @@ user_fullname
 user_id
 
 Last Change (workflow or version) Information
+---------------------------------------------
 
 change_comment
 change_title
