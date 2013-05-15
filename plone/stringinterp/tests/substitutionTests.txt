@@ -25,7 +25,7 @@ Setup
     ... ('userone', 'User One', 'user@one.com',  ('Manager', 'Member'), ()),
     ... ('usertwo', 'User Two', 'user@two.com',  ('Member',), ('groupreviewers',)),
     ... ('userthree', 'User Three', 'user@three.com',  ('Owner', 'Member'), ()),
-    ... ('userfour', 'User Four', 'user@four.com',  ('Member',), ()),
+    ... ('userfour', 'User Four', 'user@four.com',  ('Member', 'Editor'), ()),
     ... ('userfive', 'User Five', 'user@five.com',  ('Member', 'Contributor'), ()),
     ... )
     >>> self.loginAsPortalOwner()
@@ -234,6 +234,9 @@ IContentish -- emails for members having a role on context
 
     >>> getAdapter(apage, IStringSubstitution, 'contributor_emails')()
     u'user@five.com'
+
+    >>> getAdapter(apage, IStringSubstitution, 'editor_emails')()
+    u'user@four.com'
 
     >>> getAdapter(apage, IStringSubstitution, 'reader_emails')()
     u''

@@ -367,6 +367,15 @@ class ContributorEmailSubstitution(MailAddressSubstitution):
         return self.getEmailsForRole('Contributor')
 
 
+class EditorEmailSubstitution(MailAddressSubstitution):
+
+    category = _(u'E-Mail Addresses')
+    description = _(u'Editors')
+
+    def safe_call(self):
+        return self.getEmailsForRole('Editor')
+
+
 class ManagerEmailSubstitution(MailAddressSubstitution):
 
     category = _(u'E-Mail Addresses')

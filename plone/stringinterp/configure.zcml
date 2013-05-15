@@ -177,6 +177,13 @@
     <adapter
         for="AccessControl.interfaces.IRoleManager"
         provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.EditorEmailSubstitution"
+        name="editor_emails"
+    />
+
+    <adapter
+        for="AccessControl.interfaces.IRoleManager"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
         factory=".adapters.ContributorEmailSubstitution"
         name="contributor_emails"
     />
