@@ -36,6 +36,14 @@
         factory=".adapters.ParentUrlSubstitution"
         name="parent_url"
        />
+
+    <adapter
+        for="*"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.IdSubstitution"
+        name="id"
+    />
+
    <adapter
        for="Products.CMFCore.interfaces.IMinimalDublinCore"
        provides="plone.stringinterp.interfaces.IStringSubstitution"
@@ -152,7 +160,6 @@
         name="identifier"
     />
 
-
     <adapter
         for="AccessControl.interfaces.IRoleManager"
         provides="plone.stringinterp.interfaces.IStringSubstitution"
@@ -161,42 +168,42 @@
     />
 
     <adapter
-        for="AccessControl.interfaces.IRoleManager"
+        for="*"
         provides="plone.stringinterp.interfaces.IStringSubstitution"
         factory=".adapters.ReviewerEmailSubstitution"
         name="reviewer_emails"
     />
 
     <adapter
-        for="AccessControl.interfaces.IRoleManager"
+        for="*"
         provides="plone.stringinterp.interfaces.IStringSubstitution"
         factory=".adapters.ReaderEmailSubstitution"
         name="reader_emails"
     />
 
     <adapter
-        for="AccessControl.interfaces.IRoleManager"
+        for="*"
         provides="plone.stringinterp.interfaces.IStringSubstitution"
         factory=".adapters.EditorEmailSubstitution"
         name="editor_emails"
     />
 
     <adapter
-        for="AccessControl.interfaces.IRoleManager"
+        for="*"
         provides="plone.stringinterp.interfaces.IStringSubstitution"
         factory=".adapters.ContributorEmailSubstitution"
         name="contributor_emails"
     />
 
     <adapter
-        for="AccessControl.interfaces.IRoleManager"
+        for="*"
         provides="plone.stringinterp.interfaces.IStringSubstitution"
         factory=".adapters.ManagerEmailSubstitution"
         name="manager_emails"
     />
 
     <adapter
-        for="AccessControl.interfaces.IRoleManager"
+        for="*"
         provides="plone.stringinterp.interfaces.IStringSubstitution"
         factory=".adapters.MemberEmailSubstitution"
         name="member_emails"

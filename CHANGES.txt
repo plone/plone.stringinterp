@@ -5,8 +5,13 @@ Changelog
 1.0.9 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Added id substitution variable 
+  that works with content events and user events.
+  [thomasdesvenain]
 
+- Email substitutions are not restricted to contentish anymore,
+  so we can use them with user events.
+  [thomasdesvenain]
 
 1.0.8 (2013-05-23)
 ------------------

@@ -7,7 +7,7 @@ Created by Steve McMahon on 2009-08-12.
 Copyright (c) 2009 Plone Foundation.
 """
 
-from zope.interface import implements
+from zope.interface import implements, Interface
 from zope.component import adapts
 from zope.i18n import translate
 from zope.site.hooks import getSite
@@ -56,7 +56,18 @@ class UrlSubstitution(BaseSubstitution):
         return self.context.absolute_url()
 
 
+class IdSubstitution(BaseSubstitution):
+    adapts(Interface)
+
+    category = _(u'All Content')
+    description = _(u"Identifier of the content or login of managed user")
+
+    def safe_call(self):
+        return self.context.getId()
+
+
 class ParentUrlSubstitution(BaseSubstitution):
+    adapts(IContentish)
 
     category = _(u'All Content')
     description = _(u"Folder URL")
@@ -76,9 +87,9 @@ class TitleSubstitution(BaseSubstitution):
 
 
 class ParentTitleSubstitution(BaseSubstitution):
-    adapts(IMinimalDublinCore)
+    adapts(IContentish)
 
-    category = _(u'Dublin Core')
+    category = _(u'All Content')
     description = _(u'Parent title')
 
     def safe_call(self):
@@ -159,7 +170,7 @@ class IdentifierSubstitution(BaseSubstitution):
     adapts(IDublinCore)
 
     category = _(u'Dublin Core')
-    description = _(u'Identifier')
+    description = _(u'Identifier, actually URL of the content')
 
     def safe_call(self):
         return  self.context.Identifier()
