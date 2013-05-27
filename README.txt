@@ -44,6 +44,7 @@ Workflow Aware
 --------------
 
 review_state
+review_state_title
 
 
 Dublin Core

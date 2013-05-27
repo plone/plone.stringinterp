@@ -146,6 +146,8 @@ Review State
     >>> getAdapter(apage, IStringSubstitution, 'review_state')()
     u'visible'
 
+    >>> getAdapter(apage, IStringSubstitution, 'review_state_title')()
+    u'Public draft'
 
 
 IDublinCore

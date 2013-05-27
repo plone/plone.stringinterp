@@ -77,6 +77,13 @@
         />
 
     <adapter
+        for="Products.CMFCore.interfaces.IWorkflowAware"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.ReviewStateTitleSubstitution"
+        name="review_state_title"
+        />
+
+    <adapter
         for="Products.CMFCore.interfaces.ICatalogableDublinCore"
         provides="plone.stringinterp.interfaces.IStringSubstitution"
         factory=".adapters.CreatedSubstitution"
