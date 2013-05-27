@@ -197,6 +197,19 @@ class ReviewStateSubstitution(BaseSubstitution):
         return wft.getInfoFor(self.context, 'review_state')
 
 
+class ReviewStateTitleSubstitution(BaseSubstitution):
+    adapts(IWorkflowAware)
+
+    category = _(u'Workflow')
+    description = _(u'Review State Title')
+
+    def safe_call(self):
+        wft = getToolByName(self.context, 'portal_workflow')
+        review_state = wft.getInfoFor(self.context, 'review_state')
+        return wft.getTitleForStateOnType(review_state,
+                                          self.context.portal_type)
+
+
 class DateSubstitution(BaseSubstitution):
 
     def formatDate(self, adate):
