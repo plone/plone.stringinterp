@@ -206,8 +206,8 @@ class ReviewStateTitleSubstitution(BaseSubstitution):
     def safe_call(self):
         wft = getToolByName(self.context, 'portal_workflow')
         review_state = wft.getInfoFor(self.context, 'review_state')
-        return wft.getTitleForStateOnType(review_state,
-                                          self.context.portal_type)
+        return _(wft.getTitleForStateOnType(review_state,
+                                            self.context.portal_type))
 
 
 class DateSubstitution(BaseSubstitution):
