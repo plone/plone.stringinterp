@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.0.9 (unreleased)
+1.0.9 (2013-05-26)
 ------------------
 
 - Added id substitution variable 
