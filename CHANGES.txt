@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.0.10 (unreleased)
+1.0.10 (2013-05-30)
 -------------------
 
 - Added review_state_title substitution variable
