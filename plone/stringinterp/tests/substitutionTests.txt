@@ -200,8 +200,9 @@ ICatalogableDublinCore
 Everything should be in short local time format
 
 Creation Date
+
     >>> result = getAdapter(apage, IStringSubstitution, 'created')()
-    >>> re.match(r'\d\d\d\d-\d\d-\d\d \d\d:\d\d', result) is not None
+    >>> re.match(r'... \d\d, \d\d\d\d \d\d:\d\d .M$', result) is not None
     True
 
 Effective Date
@@ -213,14 +214,14 @@ Effective Date
 Expiration Date
 
     >>> datestring = getAdapter(apage, IStringSubstitution, 'expires')()
-    >>> DateTime(datestring).Date() == expires.Date()
+    >>> DateTime(datestring) == expires
     True
 
 
 Modification Date
 
     >>> result = getAdapter(apage, IStringSubstitution, 'modified')()
-    >>> re.match(r'\d\d\d\d-\d\d-\d\d \d\d:\d\d', result) is not None
+    >>> re.match(r'... \d\d, \d\d\d\d \d\d:\d\d .M$', result) is not None
     True
 
 
