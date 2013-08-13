@@ -56,6 +56,16 @@ class UrlSubstitution(BaseSubstitution):
         return self.context.absolute_url()
 
 
+class ParentIdSubstitution(BaseSubstitution):
+    adapts(Interface)
+
+    category = _(u'All Content')
+    description = _(u"Identifier of the parent content or login of managed user")
+
+    def safe_call(self):
+        return aq_parent(self.context).getId()
+
+
 class IdSubstitution(BaseSubstitution):
     adapts(Interface)
 
@@ -581,4 +591,3 @@ class LastChangeActorIdSubstitution(ChangeSubstitution):
 
     def safe_call(self):
         return self.lastChangeMetadata('actorid')
-
