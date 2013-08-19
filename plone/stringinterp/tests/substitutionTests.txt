@@ -92,6 +92,17 @@ Ask for an adapter to get the URL::
     >>> adapter()
     u'http://nohost/plone/front-page'
 
+'id' is an alias for id::
+
+    >>> getAdapter(apage, IStringSubstitution, 'id')()
+    u'front-page'
+
+
+'parent_id' is an alias for id::
+
+    >>> getAdapter(apage, IStringSubstitution, 'parent_id')()
+    u'plone'
+
 'url' is an alias for absolute_url::
 
     >>> getAdapter(apage, IStringSubstitution, 'url')()
@@ -363,4 +374,3 @@ Change author
 
     >>> getAdapter(apage, IStringSubstitution, 'change_authorid')()
     u'test_user_1_'
-

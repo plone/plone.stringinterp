@@ -8,7 +8,7 @@ for clients like plone.app.contentrules.
 To interpolate a string in context, just follow the pattern::
 
     from plone.stringinterp.interfaces import IStringInterpolator
-    
+
     IStringInterpolator(context)("Here is the title: ${title}")
 
 Substitution of variables that are part of the Dublin Core are
@@ -29,7 +29,10 @@ Implemented Substitutions
 All Content
 -----------
 
+id
+parent_id
 url
+parent_url
 
 
 Minimal Dublin Core
