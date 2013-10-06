@@ -9,6 +9,8 @@ Setup
 
     >>> import re
     >>> from zope.component import getAdapter, queryAdapter, queryMultiAdapter
+    >>> from plone.app.testing import TEST_USER_ID
+    >>> from plone.app.testing import TEST_USER_NAME
     >>> from plone.stringinterp.interfaces import IStringSubstitution, IStringSubstitutionInfo
     >>> apage = self.portal['front-page']
 
@@ -40,7 +42,7 @@ Setup
     ...         group.addMember(id)
     >>> self.portal.portal_groups.getGroupById(
     ...     'Reviewers').addMember('groupreviewers')
-    >>> self.login('test_user_1_')
+    >>> self.login(TEST_USER_NAME)
     >>> apage_localusers = (
     ... ('userfour', ('Reviewer',)),
     ... )
@@ -155,10 +157,10 @@ Workflow Aware
 Review State
 
     >>> getAdapter(apage, IStringSubstitution, 'review_state')()
-    u'visible'
+    u'published'
 
     >>> getAdapter(apage, IStringSubstitution, 'review_state_title')()
-    u'Public draft'
+    u'Published'
 
 
 IDublinCore
@@ -167,7 +169,7 @@ IDublinCore
 Creators
 
     >>> getAdapter(apage, IStringSubstitution, 'creators')()
-    u'portal_owner'
+    u'admin'
 
 Contributors
 
@@ -295,8 +297,8 @@ IContentish -- info on current user
     >>> getAdapter(apage, IStringSubstitution, 'user_fullname')()
     u'Current User'
 
-    >>> getAdapter(apage, IStringSubstitution, 'user_id')()
-    u'test_user_1_'
+    >>> getAdapter(apage, IStringSubstitution, 'user_id')() == TEST_USER_ID
+    True
 
 
 IContentish -- info on last change, workflow or version
@@ -326,16 +328,16 @@ Change type
 
 Change author
 
-    >>> getAdapter(apage, IStringSubstitution, 'change_authorid')()
-    u'test_user_1_'
+    >>> getAdapter(apage, IStringSubstitution, 'change_authorid')() == TEST_USER_NAME
+    True
 
 Let's prove that the very expensive fetching of the change data
-is cached. To do so, I'll publish the item and check that the
+is cached. To do so, I'll retract the item and check that the
 last change comment is unchanged.
 
     >>> self.setRoles( ['Owner','Reviewer'] )
     >>> wf_tool = self.portal.portal_workflow
-    >>> wf_tool.doActionFor(apage, 'publish', comment='publish it!')
+    >>> wf_tool.doActionFor(apage, 'retract', comment='retract it!')
 
     >>> getAdapter(apage, IStringSubstitution, 'change_comment')()
     u'change comment'
@@ -372,5 +374,5 @@ Change type
 
 Change author
 
-    >>> getAdapter(apage, IStringSubstitution, 'change_authorid')()
-    u'test_user_1_'
+    >>> getAdapter(apage, IStringSubstitution, 'change_authorid')() == TEST_USER_ID
+    True

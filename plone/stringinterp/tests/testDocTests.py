@@ -2,7 +2,7 @@ import unittest
 import doctest
 
 from Testing import ZopeTestCase as ztc
-import plone.stringinterp.tests.stringinterpTestCase as tc
+from plone.app.testing.bbb import PloneTestCase
 
 testfiles = (
     'substitutionTests.txt',
@@ -12,9 +12,9 @@ testfiles = (
 def test_suite():
     return unittest.TestSuite([
 
-        ztc.FunctionalDocFileSuite(
+        ztc.ZopeDocFileSuite(
             f, package='plone.stringinterp.tests',
-            test_class=tc.FunctionalTestCase,
+            test_class=PloneTestCase,
             optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS)
         
             for f in testfiles

@@ -7,12 +7,21 @@ Created by Steve McMahon on 2009-09-20.
 Copyright (c) 2009 Plone Foundation.
 """
 
-from zope.component import getGlobalSiteManager
+from zope.component import getSiteManager
 
 from Products.Five import BrowserView
 
 from plone.stringinterp.interfaces import IStringSubstitution
 from plone.stringinterp import _
+
+
+def find_adapters(reg):
+    for a in reg.registeredAdapters():
+        if len(a.required) == 1 and IStringSubstitution.implementedBy(a.factory):
+            yield a
+    for base in reg.__bases__:
+        for a in find_adapters(base):
+            yield a
 
 
 class SubstitutionInfo(BrowserView):
@@ -32,13 +41,9 @@ class SubstitutionInfo(BrowserView):
            'items':[{'id':subId, 'description':subDescription}, ...]), ...  ]
         """
 
-        adapters = [a for a in getGlobalSiteManager().registeredAdapters()
-                      if len(a.required)==1 and
-                         IStringSubstitution.implementedBy(a.factory)]
-
         # rearrange into categories
         categories = {}
-        for a in adapters:
+        for a in find_adapters(getSiteManager()):
             id = a.name
             cat = getattr(a.factory, 'category', _(u'Miscellaneous'))
             desc = getattr(a.factory, 'description', u'')
