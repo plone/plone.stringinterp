@@ -9,12 +9,18 @@ testfiles = (
     'interpolationTests.txt',
 )
 
+
+# Use this to avoid having ZopeDocFileSuite pollute the main test class
+class PloneStringinterpTestCase(PloneTestCase):
+    pass
+
+
 def test_suite():
     return unittest.TestSuite([
 
         ztc.ZopeDocFileSuite(
             f, package='plone.stringinterp.tests',
-            test_class=PloneTestCase,
+            test_class=PloneStringinterpTestCase,
             optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS)
         
             for f in testfiles
