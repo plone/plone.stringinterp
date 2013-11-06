@@ -591,3 +591,27 @@ class LastChangeActorIdSubstitution(ChangeSubstitution):
 
     def safe_call(self):
         return self.lastChangeMetadata('actorid')
+
+
+class PortalSubstitution(BaseSubstitution):
+
+    category = _(u'Portal')
+
+    def __init__(self, context):
+        BaseSubstitution.__init__(self, context)
+        self.portal = getToolByName(context, 'portal_url').getPortalObject()
+
+class PortalURLSubstitution(PortalSubstitution):
+
+    description = _(u'Portal URL')
+
+    def safe_call(self):
+        return self.portal.absolute_url()
+
+
+class PortalTitleSubstitution(PortalSubstitution):
+
+    description = _(u'Portal title')
+
+    def safe_call(self):
+        return self.portal.Title()

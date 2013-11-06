@@ -8,13 +8,16 @@ Changelog
 1.0 (unreleased)
 ----------------
 
-- Add parent_id
+- Add portal_url and portal_title.
+  [thomasdesvenain]
+
+- Add parent_id.
   [maartenkling]
 
 1.0.10 (2013-05-30)
 -------------------
 
-- Added review_state_title substitution variable
+- Added review_state_title substitution variable.
   [ichim-david]
 
 
