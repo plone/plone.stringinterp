@@ -374,3 +374,18 @@ Change author
 
     >>> getAdapter(apage, IStringSubstitution, 'change_authorid')()
     u'test_user_1_'
+
+
+Portal infos
+------------
+
+Portal title
+
+    >>> getAdapter(apage, IStringSubstitution, 'portal_title')()
+    u'Plone site'
+
+Portal URL
+
+    >>> getAdapter(apage, IStringSubstitution, 'portal_url')()
+    u'http://nohost/plone'
+

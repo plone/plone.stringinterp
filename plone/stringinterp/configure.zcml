@@ -264,4 +264,18 @@
         name="change_authorid"
     />
 
+    <adapter
+        for="*"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.PortalTitleSubstitution"
+        name="portal_title"
+    />
+
+    <adapter
+        for="*"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.PortalURLSubstitution"
+        name="portal_url"
+    />
+
 </configure>
