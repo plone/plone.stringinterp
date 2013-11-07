@@ -374,13 +374,8 @@ Change type
 
 Change author
 
-<<<<<<< HEAD
     >>> getAdapter(apage, IStringSubstitution, 'change_authorid')() == TEST_USER_ID
     True
-=======
-    >>> getAdapter(apage, IStringSubstitution, 'change_authorid')()
-    u'test_user_1_'
-
 
 Portal infos
 ------------
@@ -394,5 +389,3 @@ Portal URL
 
     >>> getAdapter(apage, IStringSubstitution, 'portal_url')()
     u'http://nohost/plone'
-
->>>>>>> eaa3270... add portal_url and portal_title
