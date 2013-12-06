@@ -4,15 +4,12 @@ Changelog
 1.1 (unreleased)
 ----------------
 
-
-1.0 (unreleased)
-----------------
-
 - Add portal_url and portal_title.
   [thomasdesvenain]
 
 - Add parent_id.
   [maartenkling]
+
 
 1.0.10 (2013-05-30)
 -------------------
