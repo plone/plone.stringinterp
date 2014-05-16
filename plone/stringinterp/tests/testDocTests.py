@@ -6,6 +6,7 @@ from plone.app.testing.bbb import PloneTestCase
 
 testfiles = (
     'substitutionTests.txt',
+    'moreSubstitutionTests.txt',''
     'interpolationTests.txt',
 )
 
@@ -22,7 +23,7 @@ def test_suite():
             f, package='plone.stringinterp.tests',
             test_class=PloneStringinterpTestCase,
             optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS)
-        
+
             for f in testfiles
         ]
     )

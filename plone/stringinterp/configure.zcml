@@ -118,6 +118,27 @@
     <adapter
         for="Products.CMFCore.interfaces.IDublinCore"
         provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.CreatorSubstitution"
+        name="creator"
+    />
+
+    <adapter
+        for="Products.CMFCore.interfaces.IDublinCore"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.CreatorFullNameSubstitution"
+        name="creator_fullname"
+    />
+
+    <adapter
+        for="Products.CMFCore.interfaces.IDublinCore"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.CreatorEmailSubstitution"
+        name="creator_email"
+    />
+
+    <adapter
+        for="Products.CMFCore.interfaces.IDublinCore"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
         factory=".adapters.CreatorsSubstitution"
         name="creators"
     />
@@ -125,8 +146,22 @@
     <adapter
         for="Products.CMFCore.interfaces.IDublinCore"
         provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.CreatorsEmailsSubstitution"
+        name="creators_emails"
+    />
+
+    <adapter
+        for="Products.CMFCore.interfaces.IDublinCore"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
         factory=".adapters.ContributorsSubstitution"
         name="contributors"
+    />
+
+    <adapter
+        for="Products.CMFCore.interfaces.IDublinCore"
+        provides="plone.stringinterp.interfaces.IStringSubstitution"
+        factory=".adapters.ContributorsEmailsSubstitution"
+        name="contributors_emails"
     />
 
     <adapter
