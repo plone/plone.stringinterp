@@ -6,7 +6,6 @@ import plone.stringinterp.tests.stringinterpTestCase as tc
 
 testfiles = (
     'substitutionTests.txt',
-    'moreSubstitutionTests.txt',''
     'interpolationTests.txt',
 )
 
