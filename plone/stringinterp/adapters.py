@@ -125,26 +125,114 @@ class TypeSubstitution(BaseSubstitution):
     def safe_call(self):
         return translate(self.context.Type(), context=self.context.REQUEST)
 
+class CreatorSubstitution(BaseSubstitution):
+    adapts(IDublinCore)
+
+    category = _(u'Dublin Core')
+    description = _(u'Creator Id')
+
+    def safe_call(self):
+        for creator in self.context.listCreators():
+            return creator
+        return ''
+
+class CreatorFullNameSubstitution(CreatorSubstitution):
+    adapts(IContentish)
+
+    category = _(u'Dublin Core')
+    description = _(u'Creator Full Name')
+
+    def safe_call(self):
+        creator = super(CreatorFullNameSubstitution, self).safe_call()
+        if not creator:
+            return ''
+
+        pm = getToolByName(self.context, "portal_membership")
+        member = pm.getMemberById(creator)
+        if not member:
+            return creator
+
+        fname = member.getProperty('fullname', None)
+        if not fname:
+            return creator
+        return fname
+
+class CreatorEmailSubstitution(CreatorSubstitution):
+    adapts(IDublinCore)
+
+    category = _(u'Dublin Core')
+    description = _(u'Creator E-Mail')
+
+    def safe_call(self):
+        creator = super(CreatorEmailSubstitution, self).safe_call()
+        if not creator:
+            return ''
+        pm = getToolByName(self.context, "portal_membership")
+        member = pm.getMemberById(creator)
+        if not member:
+            return ''
+        email = member.getProperty('email', '')
+        if not email:
+            return ''
+        return email
 
 class CreatorsSubstitution(BaseSubstitution):
     adapts(IDublinCore)
 
     category = _(u'Dublin Core')
-    description = _(u'Creators')
+    description = _(u'Creators Ids')
 
     def safe_call(self):
         return  ', '.join(self.context.listCreators())
 
+class CreatorsEmailsSubstitution(BaseSubstitution):
+    adapts(IDublinCore)
+
+    category = _(u'Dublin Core')
+    description = _(u'Creators E-Mails')
+
+    def safe_call(self):
+        creators = self.context.listCreators()
+        pm = getToolByName(self.context, "portal_membership")
+        emails = []
+        for creator in creators:
+            member = pm.getMemberById(creator)
+            if not member:
+                continue
+            email = member.getProperty('email', None)
+            if not email:
+                continue
+            emails.append(email)
+        return ', '.join(emails)
 
 class ContributorsSubstitution(BaseSubstitution):
     adapts(IDublinCore)
 
     category = _(u'Dublin Core')
-    description = _(u'Contributors')
+    description = _(u'Contributors Ids')
 
     def safe_call(self):
         return  ', '.join(self.context.listContributors())
 
+class ContributorsEmailsSubstitution(BaseSubstitution):
+    adapts(IDublinCore)
+
+    category = (u'Dublin Core')
+    description = _(u'Contributors E-Mails')
+
+    def safe_call(self):
+        contributors = self.context.listContributors()
+        pm = getToolByName(self.context, "portal_membership")
+        emails = []
+        for contributor in contributors:
+            member = pm.getMemberById(contributor)
+            if not member:
+                continue
+            email = member.getProperty('email', None)
+            if not email:
+                continue
+            emails.append(email)
+        return ', '.join(emails)
 
 class SubjectSubstitution(BaseSubstitution):
     adapts(IDublinCore)
@@ -367,8 +455,8 @@ def _recursiveGetMembersFromIds(portal, group_and_user_ids):
 
 class OwnerEmailSubstitution(MailAddressSubstitution):
 
-    category = _(u'E-Mail Addresses')
-    description = _(u'Owners')
+    category = _(u'Local Roles')
+    description = _(u'Owners E-Mails')
 
     def safe_call(self):
         return self.getEmailsForRole('Owner')
@@ -376,8 +464,8 @@ class OwnerEmailSubstitution(MailAddressSubstitution):
 
 class ReviewerEmailSubstitution(MailAddressSubstitution):
 
-    category = _(u'E-Mail Addresses')
-    description = _(u'Reviewers')
+    category = _(u'Local Roles')
+    description = _(u'Reviewers E-Mails')
 
     def safe_call(self):
         return self.getEmailsForRole('Reviewer')
@@ -385,8 +473,8 @@ class ReviewerEmailSubstitution(MailAddressSubstitution):
 
 class ReaderEmailSubstitution(MailAddressSubstitution):
 
-    category = _(u'E-Mail Addresses')
-    description = _(u'Readers')
+    category = _(u'Local Roles')
+    description = _(u'Readers E-Nails')
 
     def safe_call(self):
         return self.getEmailsForRole('Reader')
@@ -394,8 +482,8 @@ class ReaderEmailSubstitution(MailAddressSubstitution):
 
 class ContributorEmailSubstitution(MailAddressSubstitution):
 
-    category = _(u'E-Mail Addresses')
-    description = _(u'Contributors')
+    category = _(u'Local Roles')
+    description = _(u'Contributors E-Mails')
 
     def safe_call(self):
         return self.getEmailsForRole('Contributor')
@@ -403,8 +491,8 @@ class ContributorEmailSubstitution(MailAddressSubstitution):
 
 class EditorEmailSubstitution(MailAddressSubstitution):
 
-    category = _(u'E-Mail Addresses')
-    description = _(u'Editors')
+    category = _(u'Local Roles')
+    description = _(u'Editors E-Mails')
 
     def safe_call(self):
         return self.getEmailsForRole('Editor')
@@ -412,8 +500,8 @@ class EditorEmailSubstitution(MailAddressSubstitution):
 
 class ManagerEmailSubstitution(MailAddressSubstitution):
 
-    category = _(u'E-Mail Addresses')
-    description = _(u'Managers')
+    category = _(u'Local Roles')
+    description = _(u'Managers E-Mails')
 
     def safe_call(self):
         return self.getEmailsForRole('Manager')
@@ -421,8 +509,8 @@ class ManagerEmailSubstitution(MailAddressSubstitution):
 
 class MemberEmailSubstitution(MailAddressSubstitution):
 
-    category = _(u'E-Mail Addresses')
-    description = _(u'Members')
+    category = _(u'Local Roles')
+    description = _(u'Members E-Mails')
 
     def safe_call(self):
         return self.getEmailsForRole('Member')
