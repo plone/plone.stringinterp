@@ -53,8 +53,13 @@ review_state_title
 Dublin Core
 -----------
 
+creator
+creator_fullname
+creator_email
 creators
+creators_emails
 contributors
+contributors_emails
 subject
 format (mime type)
 language
