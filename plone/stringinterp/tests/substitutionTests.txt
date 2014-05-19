@@ -164,15 +164,48 @@ Review State
 IDublinCore
 -----------
 
+Creator
+
+    >>> getAdapter(apage, IStringSubstitution, 'creator')()
+    u'portal_owner'
+
+    >>> apage.setCreators( ('usertwo', 'userfive') )
+    >>> getAdapter(apage, IStringSubstitution, 'creator')()
+    u'usertwo'
+
+Creator Full Name
+
+    >>> getAdapter(apage, IStringSubstitution, 'creator_fullname')()
+    u'User Two'
+
+Creator Email
+
+    >>> getAdapter(apage, IStringSubstitution, 'creator_email')()
+    u'user@two.com'
+
 Creators
 
     >>> getAdapter(apage, IStringSubstitution, 'creators')()
-    u'portal_owner'
+    u'usertwo, userfive'
+
+Creators Emails
+
+    >>> getAdapter(apage, IStringSubstitution, 'creators_emails')()
+    u'user@two.com, user@five.com'
 
 Contributors
 
     >>> getAdapter(apage, IStringSubstitution, 'contributors')()
     u'contributor one, contributor two'
+
+Contributors Emails
+
+    >>> getAdapter(apage, IStringSubstitution, 'contributors_emails')()
+    u''
+
+    >>> apage.setContributors( ('userthree', 'userfour') )
+    >>> getAdapter(apage, IStringSubstitution, 'contributors_emails')()
+    u'user@three.com, user@four.com'
 
 Subject
     >>> getAdapter(apage, IStringSubstitution, 'subject')()

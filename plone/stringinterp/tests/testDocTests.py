@@ -16,7 +16,7 @@ def test_suite():
             f, package='plone.stringinterp.tests',
             test_class=tc.FunctionalTestCase,
             optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS)
-        
+
             for f in testfiles
         ]
     )

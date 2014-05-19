@@ -5,7 +5,9 @@ Changelog
 1.0.12 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Add creator, creator_fullname, creator_email,
+  creators_emails and contributors_emails
+  [avoinea]
 
 
 1.0.11 (2013-12-07)
