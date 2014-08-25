@@ -17,8 +17,8 @@ Let's test basic interpolation using the homepage::
 
     >>> Interpolator(apage)(s)
     u'one two three Welcome to Plone http://nohost/plone/front-page ${nonesuch}'
-    
-    
+
+
 That was a direct call. Let's do it by adapter, too, proving this
 may be swapped out.
 
@@ -39,7 +39,7 @@ Test caching scheme
 Directly change cache
 
     >>> interpolator._ldict._cache['nonesuch'] = u'nothing much here'
-    
+
 And prove that the interpolator is using the cache
 
     >>> interpolator(s)
