@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.0.12 (unreleased)
+1.0.12 (2014-10-13)
 -------------------
 
 - Add creator, creator_fullname, creator_email,
