@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.1.1 (unreleased)
+1.1.1 (2014-11-01)
 ------------------
 
 - Add creator, creator_fullname, creator_email,
