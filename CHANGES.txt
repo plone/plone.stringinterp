@@ -5,7 +5,10 @@ Changelog
 1.0.13 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Fix "RuntimeError: maximum recursion depth exceeded" in
+  recursiveGetGroupUsers when you have a group A containing group B containing
+  group A.
+  [vincentfretin]
 
 
 1.0.12 (2014-10-13)
