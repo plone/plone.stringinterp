@@ -52,6 +52,8 @@ Setup
     ...         group.addMember(id)
     >>> self.portal.portal_groups.getGroupById(
     ...     'Reviewers').addMember('groupreviewers')
+    >>> self.portal.portal_groups.getGroupById(
+    ...     'groupreviewers').addMember('Reviewers')  # add a group cycle to test we don't have a "RuntimeError: maximum recursion depth exceeded"
     >>> self.login(TEST_USER_NAME)
     >>> sandbox_localusers = (
     ... ('userfive', ('Contributor',)),
