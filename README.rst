@@ -1,6 +1,5 @@
 Introduction
 ============
-
 Provides ${id} style string interpolation using named adapters to look up
 variables. This is meant to provide a trivially simple template system
 for clients like plone.app.contentrules.
@@ -18,85 +17,71 @@ for your context. The adapter name is used for the lookup.
 
 Dependencies
 ============
-
 Dependencies are all in the CMF* namespace, so this is theoretically useful
 outside Plone. It does use the 'plone' identifier for the message factory.
-
 
 Implemented Substitutions
 =========================
 
 All Content
 -----------
-
-id
-parent_id
-url
-parent_url
+- id
+- parent_id
+- url
+- parent_url
 
 
 Minimal Dublin Core
 -------------------
-
-title
-description
-type (content type)
-
+- title
+- description
+- type (content type)
 
 Workflow Aware
 --------------
-
-review_state
-review_state_title
-
+- review_state
+- review_state_title
 
 Dublin Core
 -----------
-
-creator
-creator_fullname
-creator_email
-creators
-creators_emails
-contributors
-contributors_emails
-subject
-format (mime type)
-language
-rights
-identifier
-
+- creator
+- creator_fullname
+- creator_email
+- creators
+- creators_emails
+- contributors
+- contributors_emails
+- subject
+- format (mime type)
+- language
+- rights
+- identifier
 
 Catalogable Dublin Core
 -----------------------
-
 Everything should be in long local time format
 
-created
-effective
-expires
-modified
-
+- created
+- effective
+- expires
+- modified
 
 Member / Group Information for roles on content
 -----------------------------------------------
-
-owner_emails
-reviewer_emails
-manager_emails
-member_emails
-user_email
+- owner_emails
+- reviewer_emails
+- manager_emails
+- member_emails
+- user_email
 
 Current User Information
 ------------------------
-
-user_fullname
-user_id
+- user_fullname
+- user_id
 
 Last Change (workflow or version) Information
 ---------------------------------------------
-
-change_comment
-change_title
-change_type
-change_authorid
+- change_comment
+- change_title
+- change_type
+- change_authorid
