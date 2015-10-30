@@ -4,7 +4,9 @@ Changelog
 1.1.2 (2015-03-13)
 ------------------
 
-- Fix "RuntimeError: maximum recursion depth exceeded" in
+Fixes:
+
+- Fixed "RuntimeError: maximum recursion depth exceeded" in
   recursiveGetGroupUsers when you have a group A containing group B containing
   group A.
   [vincentfretin]
