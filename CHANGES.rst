@@ -4,7 +4,10 @@ Changelog
 1.1.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+Fixes:
+
+- Adapt to changes in SimpleViewClass in zope4.
+  [pbauer]
 
 
 1.1.2 (2015-03-13)

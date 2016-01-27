@@ -94,7 +94,7 @@ Listing Available String Substitutions
 
     >>> subinfo = queryMultiAdapter((self.portal, self.portal.REQUEST), name=u'stringinterp_info')
     >>> subinfo
-    <Products.Five.metaclass.SubstitutionInfo object at ...>
+    <Products.Five...SubstitutionInfo object at ...>
 
     >>> subinfo.substitutionList()[0]['category']
     u'All Content'
