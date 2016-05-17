@@ -481,7 +481,7 @@ class ReviewerEmailSubstitution(MailAddressSubstitution):
 class ReaderEmailSubstitution(MailAddressSubstitution):
 
     category = _(u'Local Roles')
-    description = _(u'Readers E-Nails')
+    description = _(u'Readers E-Mails')
 
     def safe_call(self):
         return self.getEmailsForRole('Reader')
