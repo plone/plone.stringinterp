@@ -9,6 +9,8 @@ Fixes:
 - Adapt to changes in SimpleViewClass in zope4.
   [pbauer]
 
+- Fix typo
+  [staeff]
 
 1.1.2 (2015-03-13)
 ------------------
