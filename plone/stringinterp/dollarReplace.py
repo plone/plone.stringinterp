@@ -9,7 +9,7 @@ Copyright (c) 2009 Plone Foundation.
 
 import string
 
-from zope.interface import implements
+from zope.interface import implementer
 from zope.component import adapts, getAdapter, ComponentLookupError
 
 from AccessControl import Unauthorized
@@ -47,9 +47,9 @@ class LazyDict(object):
         raise KeyError(key)
 
 
+@implementer(IStringInterpolator)
 class Interpolator(object):
     adapts(IContentish)
-    implements(IStringInterpolator)
 
     def __init__(self, context):
         self._ldict = LazyDict(context)

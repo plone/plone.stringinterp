@@ -7,7 +7,7 @@ Created by Steve McMahon on 2009-08-12.
 Copyright (c) 2009 Plone Foundation.
 """
 
-from zope.interface import implements, Interface
+from zope.interface import implementer, Interface
 from zope.component import adapts
 from zope.i18n import translate
 from zope.site.hooks import getSite
@@ -30,8 +30,8 @@ from plone.stringinterp import _
 from plone.stringinterp.interfaces import IStringSubstitution
 
 
+@implementer(IStringSubstitution)
 class BaseSubstitution(object):
-    implements(IStringSubstitution)
 
     def __init__(self, context):
         self.context = context
