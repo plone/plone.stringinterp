@@ -61,12 +61,10 @@ class BaseSubstitution(object):
     """ Base substitution
     """
     def __init__(self, context):
+        self.context = context
         if IContextWrapper.providedBy(context):
             self.wrapper = context
-            self.context = self.wrapper.context
-        else:
-            self.wrapper = None
-            self.context = context
+            self.context = context.context
 
     # __call__ is a wrapper for the subclassed
     # adapter's actual substitution that makes sure we're
