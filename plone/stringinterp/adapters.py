@@ -48,7 +48,7 @@ class ContextWrapper(Implicit):
         if IDublinCore.providedBy(self.context):
             alsoProvides(self, IDublinCore)
         if ICatalogableDublinCore.providedBy(self.context):
-            alsoProvides(self, ICatalogable)
+            alsoProvides(self, ICatalogableDublinCore)
 
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -60,7 +60,7 @@ class BaseSubstitution(object):
     """ Base substitution
     """
     def __init__(self, context):
-        if IWrappedContext.providedBy(context):
+        if IContextWrapper.providedBy(context):
             self.wrapper = context
             self.context = self.wrapper.context
         else:
