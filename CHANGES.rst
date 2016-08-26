@@ -10,7 +10,9 @@ Breaking changes:
 
 New features:
 
-- *add item here*
+- Provide a ContextWrapper adapter in order to easily pass custom messages
+  to StringInterpoator
+  [avoinea]
 
 Bug fixes:
 

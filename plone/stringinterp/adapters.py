@@ -7,13 +7,13 @@ Created by Steve McMahon on 2009-08-12.
 Copyright (c) 2009 Plone Foundation.
 """
 
-from zope.interface import implementer, Interface
-from zope.component import adapts
+from zope.interface import implementer, Interface, alsoProvides
+from zope.component import adapter
 from zope.i18n import translate
 from zope.site.hooks import getSite
 
 from AccessControl import Unauthorized
-from Acquisition import aq_inner, aq_parent, aq_get
+from Acquisition import aq_inner, aq_parent, aq_get, Implicit
 
 from Products.PlonePAS.interfaces.group import IGroupData
 from Products.CMFCore.utils import getToolByName
@@ -28,13 +28,44 @@ from plone.memoize.request import memoize_diy_request
 
 from plone.stringinterp import _
 from plone.stringinterp.interfaces import IStringSubstitution
+from plone.stringinterp.interfaces import IContextWrapper
+
+
+@implementer(IContextWrapper)
+class ContextWrapper(Implicit):
+    """ Wrapper for context
+    """
+    def __init__(self, context):
+        self.context = context
+
+    def __call__(self, **kwargs):
+        if IContentish.providedBy(self.context):
+            alsoProvides(self, IContentish)
+        if IMinimalDublinCore.providedBy(self.context):
+            alsoProvides(self, IMinimalDublinCore)
+        if IWorkflowAware.providedBy(self.context):
+            alsoProvides(self, IWorkflowAware)
+        if IDublinCore.providedBy(self.context):
+            alsoProvides(self, IDublinCore)
+        if ICatalogableDublinCore.providedBy(self.context):
+            alsoProvides(self, ICatalogable)
+
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+        return self.__of__(self.context)
 
 
 @implementer(IStringSubstitution)
 class BaseSubstitution(object):
-
+    """ Base substitution
+    """
     def __init__(self, context):
-        self.context = context
+        if IWrappedContext.providedBy(context):
+            self.wrapper = context
+            self.context = self.wrapper.context
+        else:
+            self.wrapper = None
+            self.context = context
 
     # __call__ is a wrapper for the subclassed
     # adapter's actual substitution that makes sure we're
@@ -46,8 +77,8 @@ class BaseSubstitution(object):
             return _(u'Unauthorized')
 
 
+@adapter(IContentish)
 class UrlSubstitution(BaseSubstitution):
-    adapts(IContentish)
 
     category = _(u'All Content')
     description = _(u'URL')
@@ -56,8 +87,8 @@ class UrlSubstitution(BaseSubstitution):
         return self.context.absolute_url()
 
 
+@adapter(Interface)
 class ParentIdSubstitution(BaseSubstitution):
-    adapts(Interface)
 
     category = _(u'All Content')
     description = _(u"Identifier of the parent content or login of managed user")
@@ -66,8 +97,8 @@ class ParentIdSubstitution(BaseSubstitution):
         return aq_parent(self.context).getId()
 
 
+@adapter(Interface)
 class IdSubstitution(BaseSubstitution):
-    adapts(Interface)
 
     category = _(u'All Content')
     description = _(u"Identifier of the content or login of managed user")
@@ -76,8 +107,8 @@ class IdSubstitution(BaseSubstitution):
         return self.context.getId()
 
 
+@adapter(IContentish)
 class ParentUrlSubstitution(BaseSubstitution):
-    adapts(IContentish)
 
     category = _(u'All Content')
     description = _(u"Folder URL")
@@ -86,8 +117,8 @@ class ParentUrlSubstitution(BaseSubstitution):
         return aq_get(aq_parent(self.context), 'absolute_url')()
 
 
+@adapter(IMinimalDublinCore)
 class TitleSubstitution(BaseSubstitution):
-    adapts(IMinimalDublinCore)
 
     category = _(u'Dublin Core')
     description = _(u'Title')
@@ -96,8 +127,8 @@ class TitleSubstitution(BaseSubstitution):
         return self.context.Title()
 
 
+@adapter(IContentish)
 class ParentTitleSubstitution(BaseSubstitution):
-    adapts(IContentish)
 
     category = _(u'All Content')
     description = _(u'Parent title')
@@ -106,8 +137,8 @@ class ParentTitleSubstitution(BaseSubstitution):
         return aq_get(aq_parent(self.context), 'Title')()
 
 
+@adapter(IMinimalDublinCore)
 class DescriptionSubstitution(BaseSubstitution):
-    adapts(IMinimalDublinCore)
 
     category = _(u'Dublin Core')
     description = _(u'Description')
@@ -116,8 +147,8 @@ class DescriptionSubstitution(BaseSubstitution):
         return self.context.Description()
 
 
+@adapter(IMinimalDublinCore)
 class TypeSubstitution(BaseSubstitution):
-    adapts(IMinimalDublinCore)
 
     category = _(u'Dublin Core')
     description = _(u'Content Type')
@@ -125,8 +156,9 @@ class TypeSubstitution(BaseSubstitution):
     def safe_call(self):
         return translate(self.context.Type(), context=self.context.REQUEST)
 
+
+@adapter(IDublinCore)
 class CreatorSubstitution(BaseSubstitution):
-    adapts(IDublinCore)
 
     category = _(u'Dublin Core')
     description = _(u'Creator Id')
@@ -136,8 +168,9 @@ class CreatorSubstitution(BaseSubstitution):
             return creator
         return ''
 
+
+@adapter(IContentish)
 class CreatorFullNameSubstitution(CreatorSubstitution):
-    adapts(IContentish)
 
     category = _(u'Dublin Core')
     description = _(u'Creator Full Name')
@@ -157,8 +190,9 @@ class CreatorFullNameSubstitution(CreatorSubstitution):
             return creator
         return fname
 
+
+@adapter(IDublinCore)
 class CreatorEmailSubstitution(CreatorSubstitution):
-    adapts(IDublinCore)
 
     category = _(u'Dublin Core')
     description = _(u'Creator E-Mail')
@@ -176,8 +210,9 @@ class CreatorEmailSubstitution(CreatorSubstitution):
             return ''
         return email
 
+
+@adapter(IDublinCore)
 class CreatorsSubstitution(BaseSubstitution):
-    adapts(IDublinCore)
 
     category = _(u'Dublin Core')
     description = _(u'Creators Ids')
@@ -185,8 +220,9 @@ class CreatorsSubstitution(BaseSubstitution):
     def safe_call(self):
         return  ', '.join(self.context.listCreators())
 
+
+@adapter(IDublinCore)
 class CreatorsEmailsSubstitution(BaseSubstitution):
-    adapts(IDublinCore)
 
     category = _(u'Dublin Core')
     description = _(u'Creators E-Mails')
@@ -205,8 +241,9 @@ class CreatorsEmailsSubstitution(BaseSubstitution):
             emails.append(email)
         return ', '.join(emails)
 
+
+@adapter(IDublinCore)
 class ContributorsSubstitution(BaseSubstitution):
-    adapts(IDublinCore)
 
     category = _(u'Dublin Core')
     description = _(u'Contributors Ids')
@@ -214,8 +251,9 @@ class ContributorsSubstitution(BaseSubstitution):
     def safe_call(self):
         return  ', '.join(self.context.listContributors())
 
+
+@adapter(IDublinCore)
 class ContributorsEmailsSubstitution(BaseSubstitution):
-    adapts(IDublinCore)
 
     category = (u'Dublin Core')
     description = _(u'Contributors E-Mails')
@@ -234,8 +272,9 @@ class ContributorsEmailsSubstitution(BaseSubstitution):
             emails.append(email)
         return ', '.join(emails)
 
+
+@adapter(IDublinCore)
 class SubjectSubstitution(BaseSubstitution):
-    adapts(IDublinCore)
 
     category = _(u'Dublin Core')
     description = _(u'Subject')
@@ -244,8 +283,8 @@ class SubjectSubstitution(BaseSubstitution):
         return  ', '.join(self.context.Subject())
 
 
+@adapter(IDublinCore)
 class FormatSubstitution(BaseSubstitution):
-    adapts(IDublinCore)
 
     category = _(u'Dublin Core')
     description = _(u'Format')
@@ -254,8 +293,8 @@ class FormatSubstitution(BaseSubstitution):
         return  self.context.Format()
 
 
+@adapter(IDublinCore)
 class LanguageSubstitution(BaseSubstitution):
-    adapts(IDublinCore)
 
     category = _(u'Dublin Core')
     description = _(u'Language')
@@ -264,8 +303,8 @@ class LanguageSubstitution(BaseSubstitution):
         return  self.context.Language()
 
 
+@adapter(IDublinCore)
 class IdentifierSubstitution(BaseSubstitution):
-    adapts(IDublinCore)
 
     category = _(u'Dublin Core')
     description = _(u'Identifier, actually URL of the content')
@@ -274,8 +313,8 @@ class IdentifierSubstitution(BaseSubstitution):
         return  self.context.Identifier()
 
 
+@adapter(IDublinCore)
 class RightsSubstitution(BaseSubstitution):
-    adapts(IDublinCore)
 
     category = _(u'Dublin Core')
     description = _(u'Rights')
@@ -284,8 +323,8 @@ class RightsSubstitution(BaseSubstitution):
         return  self.context.Rights()
 
 
+@adapter(IWorkflowAware)
 class ReviewStateSubstitution(BaseSubstitution):
-    adapts(IWorkflowAware)
 
     category = _(u'Workflow')
     description = _(u'Review State')
@@ -295,8 +334,8 @@ class ReviewStateSubstitution(BaseSubstitution):
         return wft.getInfoFor(self.context, 'review_state')
 
 
+@adapter(IWorkflowAware)
 class ReviewStateTitleSubstitution(BaseSubstitution):
-    adapts(IWorkflowAware)
 
     category = _(u'Workflow')
     description = _(u'Review State Title')
@@ -318,8 +357,8 @@ class DateSubstitution(BaseSubstitution):
             return u'???'
 
 
+@adapter(ICatalogableDublinCore)
 class CreatedSubstitution(DateSubstitution):
-    adapts(ICatalogableDublinCore)
 
     category = _(u'Dublin Core')
     description = _(u'Date Created')
@@ -328,8 +367,8 @@ class CreatedSubstitution(DateSubstitution):
         return self.formatDate(self.context.created())
 
 
+@adapter(ICatalogableDublinCore)
 class EffectiveSubstitution(DateSubstitution):
-    adapts(ICatalogableDublinCore)
 
     category = _(u'Dublin Core')
     description = _(u'Date Effective')
@@ -338,8 +377,8 @@ class EffectiveSubstitution(DateSubstitution):
         return self.formatDate(self.context.effective())
 
 
+@adapter(ICatalogableDublinCore)
 class ExpiresSubstitution(DateSubstitution):
-    adapts(ICatalogableDublinCore)
 
     category = _(u'Dublin Core')
     description = _(u'Date Expires')
@@ -348,8 +387,8 @@ class ExpiresSubstitution(DateSubstitution):
         return self.formatDate(self.context.expires())
 
 
+@adapter(ICatalogableDublinCore)
 class ModifiedSubstitution(DateSubstitution):
-    adapts(ICatalogableDublinCore)
 
     category = _(u'Dublin Core')
     description = _(u'Date Modified')
@@ -359,11 +398,11 @@ class ModifiedSubstitution(DateSubstitution):
 
 
 # A base class for adapters that need member information
+@adapter(IContentish)
 class MemberSubstitution(BaseSubstitution):
-    adapts(IContentish)
 
     def __init__(self, context):
-        self.context = context
+        super(MemberSubstitution, self).__init__(context)
         self.mtool = getToolByName(self.context, "portal_membership")
         self.gtool = getToolByName(self.context, "portal_groups")
 
@@ -393,8 +432,8 @@ class MemberSubstitution(BaseSubstitution):
 
 
 # A base class for all the role->email list adapters
+@adapter(IContentish)
 class MailAddressSubstitution(MemberSubstitution):
-    adapts(IContentish)
 
     def getEmailsForRole(self, role):
 
@@ -523,8 +562,8 @@ class MemberEmailSubstitution(MailAddressSubstitution):
         return self.getEmailsForRole('Member')
 
 
+@adapter(IContentish)
 class UserEmailSubstitution(BaseSubstitution):
-    adapts(IContentish)
 
     category = _(u'Current User')
     description = _(u'E-Mail Address')
@@ -540,8 +579,8 @@ class UserEmailSubstitution(BaseSubstitution):
         return u''
 
 
+@adapter(IContentish)
 class UserFullNameSubstitution(BaseSubstitution):
-    adapts(IContentish)
 
     category = _(u'Current User')
     description = _(u'Full Name')
@@ -560,8 +599,8 @@ class UserFullNameSubstitution(BaseSubstitution):
         return u''
 
 
+@adapter(IContentish)
 class UserIdSubstitution(BaseSubstitution):
-    adapts(IContentish)
 
     category = _(u'Current User')
     description = _(u'Id')
@@ -648,8 +687,8 @@ class ChangeSubstitution(BaseSubstitution):
         return  _lastChange(self.context.REQUEST, self.context).get(id, '')
 
 
+@adapter(IContentish)
 class LastChangeCommentSubstitution(ChangeSubstitution):
-    adapts(IContentish)
 
     category = _(u'History')
     description = _(u'Comment')
@@ -658,8 +697,8 @@ class LastChangeCommentSubstitution(ChangeSubstitution):
         return self.lastChangeMetadata('comments')
 
 
+@adapter(IContentish)
 class LastChangeTitleSubstitution(ChangeSubstitution):
-    adapts(IContentish)
 
     category = _(u'History')
     description = _(u'Transition title')
@@ -668,8 +707,8 @@ class LastChangeTitleSubstitution(ChangeSubstitution):
         return self.lastChangeMetadata('transition_title')
 
 
+@adapter(IContentish)
 class LastChangeTypeSubstitution(ChangeSubstitution):
-    adapts(IContentish)
 
     category = _(u'History')
     description = _(u'Change type')
@@ -678,8 +717,8 @@ class LastChangeTypeSubstitution(ChangeSubstitution):
         return self.lastChangeMetadata('type')
 
 
+@adapter(IContentish)
 class LastChangeActorIdSubstitution(ChangeSubstitution):
-    adapts(IContentish)
 
     category = _(u'History')
     description = _(u'Change author')
@@ -694,7 +733,7 @@ class PortalSubstitution(BaseSubstitution):
 
     def __init__(self, context):
         BaseSubstitution.__init__(self, context)
-        self.portal = getToolByName(context, 'portal_url').getPortalObject()
+        self.portal = getToolByName(self.context, 'portal_url').getPortalObject()
 
 class PortalURLSubstitution(PortalSubstitution):
 
