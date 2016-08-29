@@ -15,6 +15,7 @@ from zope.site.hooks import getSite
 from AccessControl import Unauthorized
 from Acquisition import aq_inner, aq_parent, aq_get, Implicit
 
+from AccessControl.interfaces import IRoleManager
 from Products.PlonePAS.interfaces.group import IGroupData
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.interfaces import (
@@ -40,6 +41,7 @@ class ContextWrapper(Implicit):
         self.context = context
 
     def __call__(self, **kwargs):
+        alsoProvides(self, IRoleManager)
         if IContentish.providedBy(self.context):
             alsoProvides(self, IContentish)
         if IMinimalDublinCore.providedBy(self.context):
@@ -61,10 +63,12 @@ class BaseSubstitution(object):
     """ Base substitution
     """
     def __init__(self, context):
-        self.context = context
         if IContextWrapper.providedBy(context):
             self.wrapper = context
-            self.context = context.context
+            self.context = aq_inner(self.wrapper.context)
+        else:
+            self.wrapper = None
+            self.context = context
 
     # __call__ is a wrapper for the subclassed
     # adapter's actual substitution that makes sure we're

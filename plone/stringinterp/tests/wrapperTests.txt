@@ -9,7 +9,7 @@ Setup
 -----
 
     >>> import re
-    >>> from zope.component import getAdapter, queryAdapter, queryMultiAdapter
+    >>> from zope.component import getAdapter, queryAdapter, queryMultiAdapter, getGlobalSiteManager
     >>> from plone.stringinterp.interfaces import IStringSubstitution, IStringSubstitutionInfo
     >>> apage = self.portal['front-page']
 
@@ -54,6 +54,7 @@ Setup
 
 
 Context Wrapper
+---------------
 
     >>> from plone.stringinterp.interfaces import IContextWrapper
     >>> apage = IContextWrapper(apage)(
@@ -61,6 +62,44 @@ Context Wrapper
     ...         items=['a', 'b', 'c'],
     ...         langs={'en': "English", "fr": "French"}
     ... )
+
+Get custom messages from Wrapper
+
+    >>> sm = getGlobalSiteManager()
+    >>> from zope.interface import Interface
+    >>> from plone.stringinterp.adapters import BaseSubstitution
+
+    >>> class CustomMessageSubstitution(BaseSubstitution):
+    ...     def safe_call(self):
+    ...         return self.wrapper.message
+
+
+    >>> sm.registerAdapter(CustomMessageSubstitution, (Interface, ), IStringSubstitution, name=u"custom_message")
+    >>> getAdapter(apage, IStringSubstitution, 'custom_message')()
+    u'A cool message here'
+
+    >>> class CustomItemsSubstitution(BaseSubstitution):
+    ...     def safe_call(self):
+    ...         return self.wrapper.items
+
+    >>> sm.registerAdapter(CustomItemsSubstitution, (Interface, ), IStringSubstitution, name=u"custom_items")
+    >>> getAdapter(apage, IStringSubstitution, 'custom_items')()
+    ['a', 'b', 'c']
+
+    >>> class CustomLangsSubstitution(BaseSubstitution):
+    ...     def safe_call(self):
+    ...         return self.wrapper.langs
+
+    >>> sm.registerAdapter(CustomLangsSubstitution, (Interface, ), IStringSubstitution, name=u"custom_langs")
+    >>> langs = getAdapter(apage, IStringSubstitution, 'custom_langs')()
+    >>> langs['en']
+    'English'
+
+    >>> langs['fr']
+    'French'
+
+
+Even if you use a IContextWrapper adapter the rest of the registered substitutions will work as before.
 
 
 Listing Available String Substitutions
@@ -338,7 +377,7 @@ Inspect a version change (the most recent change)
     >>> self.setRoles( ['Owner',] )
     >>> from Products.CMFCore.utils import getToolByName
     >>> pr = getToolByName(self.portal, 'portal_repository', None)
-    >>> pr.save(apage, 'change comment')
+    >>> pr.save(apage.context, 'change comment')
 
 Initial revision
 
@@ -366,7 +405,7 @@ last change comment is unchanged.
 
     >>> self.setRoles( ['Owner','Reviewer'] )
     >>> wf_tool = self.portal.portal_workflow
-    >>> wf_tool.doActionFor(apage, 'publish', comment='publish it!')
+    >>> wf_tool.doActionFor(apage.context, 'publish', comment='publish it!')
 
     >>> getAdapter(apage, IStringSubstitution, 'change_comment')()
     u'change comment'
@@ -378,8 +417,14 @@ use it to test a workflow change
     'target'
 
     >>> apage = self.portal['target']
+    >>> apage = IContextWrapper(apage)(
+    ...         message=u"A cool message here",
+    ...         items=['a', 'b', 'c'],
+    ...         langs={'en': "English", "fr": "French"}
+    ... )
+
     >>> wf_tool = self.portal.portal_workflow
-    >>> wf_tool.doActionFor(apage, 'publish', comment='publish it!')
+    >>> wf_tool.doActionFor(apage.context, 'publish', comment='publish it!')
 
 Review state
 
