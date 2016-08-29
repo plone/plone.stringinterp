@@ -10,6 +10,8 @@ Setup
 
     >>> import re
     >>> from zope.component import getAdapter, queryAdapter, queryMultiAdapter, getGlobalSiteManager
+    >>> from plone.app.testing import TEST_USER_ID
+    >>> from plone.app.testing import TEST_USER_NAME
     >>> from plone.stringinterp.interfaces import IStringSubstitution, IStringSubstitutionInfo
     >>> apage = self.portal['front-page']
 
@@ -41,9 +43,7 @@ Setup
     ...         group.addMember(id)
     >>> self.portal.portal_groups.getGroupById(
     ...     'Reviewers').addMember('groupreviewers')
-    >>> self.portal.portal_groups.getGroupById(
-    ...     'groupreviewers').addMember('Reviewers')  # add a group cycle to test we don't have a "RuntimeError: maximum recursion depth exceeded"
-    >>> self.login('test_user_1_')
+    >>> self.login(TEST_USER_NAME)
     >>> apage_localusers = (
     ... ('userfour', ('Reviewer',)),
     ... )
@@ -51,7 +51,6 @@ Setup
     ...     apage.manage_setLocalRoles(id, localroles)
     >>> self.portal.portal_membership.getAuthenticatedMember().setProperties(email='currentuser@foobar.com')
     >>> self.portal.portal_membership.getAuthenticatedMember().setProperties(fullname='Current User')
-
 
 Context Wrapper
 ---------------
@@ -101,6 +100,20 @@ Get custom messages from Wrapper
 
 Even if you use a IContextWrapper adapter the rest of the registered substitutions will work as before.
 
+Negative Cases
+--------------
+
+We shouldn't get an adapter where we haven't defined one::
+
+Object with no title
+
+    >>> queryAdapter(self.app, IStringSubstitution, 'Title')
+
+Non-existent substitution
+
+    >>> queryAdapter(self.portal, IStringSubstitution, 'NoTitle')
+
+
 
 Listing Available String Substitutions
 --------------------------------------
@@ -110,7 +123,7 @@ Listing Available String Substitutions
 
     >>> subinfo = queryMultiAdapter((self.portal, self.portal.REQUEST), name=u'stringinterp_info')
     >>> subinfo
-    <Products.Five.metaclass.SubstitutionInfo object at ...>
+    <Products.Five...SubstitutionInfo object at ...>
 
     >>> subinfo.substitutionList()[0]['category']
     u'All Content'
@@ -192,57 +205,24 @@ Workflow Aware
 Review State
 
     >>> getAdapter(apage, IStringSubstitution, 'review_state')()
-    u'visible'
+    u'published'
 
     >>> getAdapter(apage, IStringSubstitution, 'review_state_title')()
-    u'Public draft'
+    u'Published'
 
 
 IDublinCore
 -----------
 
-Creator
-
-    >>> getAdapter(apage, IStringSubstitution, 'creator')()
-    u'portal_owner'
-
-    >>> apage.setCreators( ('usertwo', 'userfive') )
-    >>> getAdapter(apage, IStringSubstitution, 'creator')()
-    u'usertwo'
-
-Creator Full Name
-
-    >>> getAdapter(apage, IStringSubstitution, 'creator_fullname')()
-    u'User Two'
-
-Creator Email
-
-    >>> getAdapter(apage, IStringSubstitution, 'creator_email')()
-    u'user@two.com'
-
 Creators
 
     >>> getAdapter(apage, IStringSubstitution, 'creators')()
-    u'usertwo, userfive'
-
-Creators Emails
-
-    >>> getAdapter(apage, IStringSubstitution, 'creators_emails')()
-    u'user@two.com, user@five.com'
+    u'admin'
 
 Contributors
 
     >>> getAdapter(apage, IStringSubstitution, 'contributors')()
     u'contributor one, contributor two'
-
-Contributors Emails
-
-    >>> getAdapter(apage, IStringSubstitution, 'contributors_emails')()
-    u''
-
-    >>> apage.setContributors( ('userthree', 'userfour') )
-    >>> getAdapter(apage, IStringSubstitution, 'contributors_emails')()
-    u'user@three.com, user@four.com'
 
 Subject
     >>> getAdapter(apage, IStringSubstitution, 'subject')()
@@ -365,8 +345,8 @@ IContentish -- info on current user
     >>> getAdapter(apage, IStringSubstitution, 'user_fullname')()
     u'Current User'
 
-    >>> getAdapter(apage, IStringSubstitution, 'user_id')()
-    u'test_user_1_'
+    >>> getAdapter(apage, IStringSubstitution, 'user_id')() == TEST_USER_ID
+    True
 
 
 IContentish -- info on last change, workflow or version
@@ -396,16 +376,16 @@ Change type
 
 Change author
 
-    >>> getAdapter(apage, IStringSubstitution, 'change_authorid')()
-    u'test_user_1_'
+    >>> getAdapter(apage, IStringSubstitution, 'change_authorid')() == TEST_USER_NAME
+    True
 
 Let's prove that the very expensive fetching of the change data
-is cached. To do so, I'll publish the item and check that the
+is cached. To do so, I'll retract the item and check that the
 last change comment is unchanged.
 
     >>> self.setRoles( ['Owner','Reviewer'] )
     >>> wf_tool = self.portal.portal_workflow
-    >>> wf_tool.doActionFor(apage.context, 'publish', comment='publish it!')
+    >>> wf_tool.doActionFor(apage.context, 'retract', comment='retract it!')
 
     >>> getAdapter(apage, IStringSubstitution, 'change_comment')()
     u'change comment'
@@ -422,7 +402,6 @@ use it to test a workflow change
     ...         items=['a', 'b', 'c'],
     ...         langs={'en': "English", "fr": "French"}
     ... )
-
     >>> wf_tool = self.portal.portal_workflow
     >>> wf_tool.doActionFor(apage.context, 'publish', comment='publish it!')
 
@@ -448,9 +427,8 @@ Change type
 
 Change author
 
-    >>> getAdapter(apage, IStringSubstitution, 'change_authorid')()
-    u'test_user_1_'
-
+    >>> getAdapter(apage, IStringSubstitution, 'change_authorid')() == TEST_USER_ID
+    True
 
 Portal infos
 ------------
@@ -464,4 +442,3 @@ Portal URL
 
     >>> getAdapter(apage, IStringSubstitution, 'portal_url')()
     u'http://nohost/plone'
-
