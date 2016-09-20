@@ -4,19 +4,11 @@ Changelog
 1.1.5 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
 New features:
 
 - Provide a ContextWrapper adapter in order to easily pass custom messages
   to StringInterpoator
   [avoinea]
-
-Bug fixes:
-
-- *add item here*
 
 
 1.1.4 (2016-08-18)
