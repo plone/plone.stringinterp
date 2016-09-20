@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '1.0.14.dev0'
+version = '1.0.14'
 
 setup(
     name='plone.stringinterp',
