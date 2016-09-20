@@ -48,3 +48,19 @@ class IStringSubstitutionInfo(Interface):
         [ (categoryTitle,
           [{'id':subId, 'description':subDescription}, ...]), ...  ]
         """
+
+class IContextWrapper(Interface):
+    """
+        Wrap context in order to be able to provide custom strings
+        not stored on context
+
+        Usage:
+
+        >>> wrapper = IContextWrapper(obj)(m1='A message', m2="Another one")
+        >>> notify(CustomEvent(wrapper))
+    """
+
+    def __call__(kwargs):
+        """"
+           Return wrapped context
+        """

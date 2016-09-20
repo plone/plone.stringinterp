@@ -7,6 +7,7 @@ from plone.app.testing.bbb import PloneTestCase
 testfiles = (
     'substitutionTests.txt',
     'moreSubstitutionTests.txt',''
+    'wrapperTests.txt',
     'interpolationTests.txt',
 )
 

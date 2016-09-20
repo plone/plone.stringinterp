@@ -18,6 +18,12 @@
     />
 
 
+    <adapter
+        for="zope.interface.Interface"
+        provides="plone.stringinterp.interfaces.IContextWrapper"
+        factory=".adapters.ContextWrapper"
+    />
+
    <adapter
        for="*"
        provides="plone.stringinterp.interfaces.IStringSubstitution"
