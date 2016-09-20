@@ -5,6 +5,8 @@ Changelog
 1.0.14 (unreleased)
 -------------------
 
+New features:
+
 - Provide a ContextWrapper adapter in order to easily pass custom messages
   to StringInterpoator
   [avoinea]
