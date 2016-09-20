@@ -12,9 +12,12 @@ To interpolate a string in context, just follow the pattern::
     IStringInterpolator(context)("Here is the title: ${title}")
 
 Substitution of variables that are part of the Dublin Core are
-provided with the package. To provide additional subsitutions, just
+provided with the package. To provide additional substitutions, just
 provide a named adapter implementing interfaces.IStringSubstitution
 for your context. The adapter name is used for the lookup.
+
+You can also wrap your context with IContextWrapper adapter if you need to pass
+custom messages within your substitutions.
 
 Dependencies
 ============
