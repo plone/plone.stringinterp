@@ -32,7 +32,15 @@ setup(
         'setuptools',
         'Products.CMFCore',
         'zope.i18n',
+        'plone.memoize',
     ],
+    extras_require={
+        'test': [
+            'plone.app.contenttypes',
+            'plone.app.testing',
+            'plone.testing',
+        ],
+    },
     entry_points="""
         [z3c.autoinclude.plugin]
         target = plone

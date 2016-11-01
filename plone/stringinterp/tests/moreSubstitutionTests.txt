@@ -11,12 +11,16 @@ Setup
     >>> from zope.component import getAdapter, queryAdapter, queryMultiAdapter
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import TEST_USER_NAME
+    >>> from plone.app.testing import SITE_OWNER_NAME
+    >>> from plone.app.testing import login
     >>> from plone.app.testing import setRoles
-    >>> setRoles(portal, TEST_USER_ID, ['Manager'])
     >>> from plone.stringinterp.interfaces import IStringSubstitution, IStringSubstitutionInfo
 
-    >>> oid = self.portal.invokeFactory('Folder', 'sandbox')
-    >>> sandbox = self.portal[oid]
+    >>> app = layer['app']
+    >>> portal = layer['portal']
+    >>> setRoles(portal, TEST_USER_ID, ['Manager'])
+    >>> oid = portal.invokeFactory('Folder', 'sandbox')
+    >>> sandbox = portal[oid]
     >>> sandbox.setTitle('Sandbox')
 
     >>> oid = sandbox.invokeFactory('Document', 'a-page')
@@ -40,21 +44,21 @@ Setup
     ... ('userfour', 'User Four', 'user@four.com',  ('Member', 'Editor'), ()),
     ... ('userfive', 'User Five', 'user@five.com',  ('Member', 'Contributor'), ()),
     ... )
-    >>> self.loginAsPortalOwner()
+    >>> login(app, SITE_OWNER_NAME)
     >>> for id, roles in groups:
-    ...     foo = self.portal.portal_groups.addGroup(id, roles=roles)
+    ...     foo = portal.portal_groups.addGroup(id, roles=roles)
     >>> for id, fname, email, roles, groups in users:
-    ...     self.portal.portal_membership.addMember(id, 'secret', roles, [])
-    ...     member = self.portal.portal_membership.getMemberById(id)
+    ...     portal.portal_membership.addMember(id, 'secret', roles, [])
+    ...     member = portal.portal_membership.getMemberById(id)
     ...     member.setMemberProperties({'fullname': fname, 'email': email})
     ...     for groupname in groups:
-    ...         group = self.portal.portal_groups.getGroupById(groupname)
+    ...         group = portal.portal_groups.getGroupById(groupname)
     ...         group.addMember(id)
-    >>> self.portal.portal_groups.getGroupById(
+    >>> portal.portal_groups.getGroupById(
     ...     'Reviewers').addMember('groupreviewers')
-    >>> self.portal.portal_groups.getGroupById(
+    >>> portal.portal_groups.getGroupById(
     ...     'groupreviewers').addMember('Reviewers')  # add a group cycle to test we don't have a "RuntimeError: maximum recursion depth exceeded"
-    >>> self.login(TEST_USER_NAME)
+    >>> login(portal, TEST_USER_NAME)
     >>> sandbox_localusers = (
     ... ('userfive', ('Contributor',)),
     ... )
@@ -67,8 +71,8 @@ Setup
     ... )
     >>> for id, localroles in apage_localusers:
     ...     apage.manage_setLocalRoles(id, localroles)
-    >>> self.portal.portal_membership.getAuthenticatedMember().setProperties(email='currentuser@foobar.com')
-    >>> self.portal.portal_membership.getAuthenticatedMember().setProperties(fullname='Current User')
+    >>> portal.portal_membership.getAuthenticatedMember().setProperties(email='currentuser@foobar.com')
+    >>> portal.portal_membership.getAuthenticatedMember().setProperties(fullname='Current User')
 
 
 Negative Cases
@@ -78,11 +82,11 @@ We shouldn't get an adapter where we haven't defined one::
 
 Object with no title
 
-    >>> queryAdapter(self.app, IStringSubstitution, 'Title')
+    >>> queryAdapter(app, IStringSubstitution, 'Title')
 
 Non-existent substitution
 
-    >>> queryAdapter(self.portal, IStringSubstitution, 'NoTitle')
+    >>> queryAdapter(portal, IStringSubstitution, 'NoTitle')
 
 
 
@@ -92,7 +96,7 @@ Listing Available String Substitutions
     We can get a list of all of the available substitutions, ready
     to use in a template::
 
-    >>> subinfo = queryMultiAdapter((self.portal, self.portal.REQUEST), name=u'stringinterp_info')
+    >>> subinfo = queryMultiAdapter((portal, portal.REQUEST), name=u'stringinterp_info')
     >>> subinfo
     <Products.Five...SubstitutionInfo object at ...>
 
@@ -176,10 +180,10 @@ Workflow Aware
 Review State
 
     >>> getAdapter(apage, IStringSubstitution, 'review_state')()
-    u'visible'
+    u'private'
 
     >>> getAdapter(apage, IStringSubstitution, 'review_state_title')()
-    u'Public draft'
+    u'Private'
 
 
 IDublinCore
@@ -240,7 +244,7 @@ Keywords (alias for subject)
 Format
 
     >>> getAdapter(apage, IStringSubstitution, 'format')()
-    u'text/html'
+    u'text/plain'
 
 Language
 
@@ -267,13 +271,12 @@ Everything should be in short local time format
 Creation Date
 
     >>> result = getAdapter(apage, IStringSubstitution, 'created')()
-    >>> re.match(r'... \d\d, \d\d\d\d \d\d:\d\d .M$', result) is not None
-    True
 
 Effective Date
 
-    >>> getAdapter(apage, IStringSubstitution, 'effective')()
-    u'???'
+    >>> result = getAdapter(apage, IStringSubstitution, 'effective')()
+    >>> re.match(r'... \d\d, \d\d\d\d \d\d:\d\d .M$', result) is not None
+    True
 
 
 Expiration Date
@@ -321,11 +324,11 @@ information, local roles, and group memberships for that user can
 remain even though there's no user object available.  The email
 adapters can handle this case.
 
-    >>> self.loginAsPortalOwner()
-    >>> self.portal.portal_membership.deleteMembers(
+    >>> login(app, SITE_OWNER_NAME)
+    >>> portal.portal_membership.deleteMembers(
     ...     ('usertwo', 'userthree'), delete_localroles=0)
     ('usertwo', 'userthree')
-    >>> self.login()
+    >>> login(portal, TEST_USER_NAME)
 
     >>> getAdapter(apage, IStringSubstitution, 'owner_emails')()
     u'currentuser@foobar.com'
@@ -358,9 +361,9 @@ IContentish -- info on last change, workflow or version
 
 Inspect a version change (the most recent change)
 
-    >>> self.setRoles( ['Owner',] )
+    >>> setRoles(portal, TEST_USER_ID, ['Owner',])
     >>> from Products.CMFCore.utils import getToolByName
-    >>> pr = getToolByName(self.portal, 'portal_repository', None)
+    >>> pr = getToolByName(portal, 'portal_repository', None)
     >>> pr.save(apage, 'change comment')
 
 Initial revision
@@ -387,8 +390,8 @@ Let's prove that the very expensive fetching of the change data
 is cached. To do so, I'll retract the item and check that the
 last change comment is unchanged.
 
-    >>> self.setRoles( ['Owner','Reviewer'] )
-    >>> wf_tool = self.portal.portal_workflow
+    >>> setRoles(portal, TEST_USER_ID, ['Owner','Reviewer'])
+    >>> wf_tool = portal.portal_workflow
     >>> wf_tool.doActionFor(apage, 'publish', comment='publish it!')
 
     >>> getAdapter(apage, IStringSubstitution, 'change_comment')()
@@ -397,11 +400,11 @@ last change comment is unchanged.
 Let's create a new object in order to bypass the caching; we'll
 use it to test a workflow change
 
-    >>> self.portal.invokeFactory('Document', 'target')
+    >>> portal.invokeFactory('Document', 'target')
     'target'
 
-    >>> apage = self.portal['target']
-    >>> wf_tool = self.portal.portal_workflow
+    >>> apage = portal['target']
+    >>> wf_tool = portal.portal_workflow
     >>> wf_tool.doActionFor(apage, 'publish', comment='publish it!')
 
 Review state

@@ -1,8 +1,11 @@
-import unittest
+from plone.testing import layered
+# from plone.app.testing import PLONE_INTEGRATION_TESTING
+from plone.app.contenttypes.testing import (
+    PLONE_APP_CONTENTTYPES_INTEGRATION_TESTING
+)
 import doctest
+import unittest
 
-from Testing import ZopeTestCase as ztc
-from plone.app.testing.bbb import PloneTestCase
 
 testfiles = (
     'substitutionTests.txt',
@@ -12,22 +15,11 @@ testfiles = (
 )
 
 
-# Use this to avoid having ZopeDocFileSuite pollute the main test class
-class PloneStringinterpTestCase(PloneTestCase):
-    pass
-
-
 def test_suite():
     return unittest.TestSuite([
-
-        ztc.ZopeDocFileSuite(
+        layered(doctest.DocFileSuite(
             f, package='plone.stringinterp.tests',
-            test_class=PloneStringinterpTestCase,
-            optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS)
-
-            for f in testfiles
-        ]
-    )
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')
+            optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),
+                layer=PLONE_APP_CONTENTTYPES_INTEGRATION_TESTING)
+                for f in testfiles
+        ])
