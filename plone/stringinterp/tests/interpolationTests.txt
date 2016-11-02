@@ -9,11 +9,18 @@ using string substitutions provided by named adapters.
 
 Let's test basic interpolation using the homepage::
 
+    >>> from plone.app.testing import SITE_OWNER_NAME
+    >>> from plone.app.testing import login
     >>> from plone.stringinterp import Interpolator
-
+    >>> app = layer['app']
+    >>> portal = layer['portal']
+    >>> login(app, SITE_OWNER_NAME)
+    >>> oid = portal.invokeFactory('Document', 'front-page')
+    >>> apage = portal[oid]
+    >>> apage.setTitle('Welcome to Plone')
     >>> s = """one two three ${title} ${url} ${nonesuch}"""
 
-    >>> apage = self.portal['front-page']
+    >>> apage = portal['front-page']
 
     >>> Interpolator(apage)(s)
     u'one two three Welcome to Plone http://nohost/plone/front-page ${nonesuch}'
