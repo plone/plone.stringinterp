@@ -4,17 +4,9 @@ Changelog
 1.2.1 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
 New features:
 
 - Removed ZopeTestCase.  [maurits]
-
-Bug fixes:
-
-- *add item here*
 
 
 1.2 (2016-09-20)
