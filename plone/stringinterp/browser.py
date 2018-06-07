@@ -54,11 +54,10 @@ class SubstitutionInfo(BrowserView):
         res = []
         keys = categories.keys()
         # sort, ignoring case
-        keys.sort(lambda a, b: cmp(a.lower(), b.lower()))
-        for key in keys:
+        for key in sorted(keys, key=lambda s: s.lower()):
             acat = categories[key]
             # sort by id, ignoring case
-            acat.sort(lambda a, b: cmp(a['id'].lower(), b['id'].lower()))
+            acat = sorted(acat, key=lambda i: i['id'].lower())
             res.append({'category': key, 'items': acat})
 
         return res
