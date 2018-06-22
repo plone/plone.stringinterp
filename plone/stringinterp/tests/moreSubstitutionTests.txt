@@ -168,9 +168,13 @@ Content type
 
 Let's try some non-ASCII::
 
-   >>> apage.setTitle(u'Plone in Español')
+   >>> import six
+   >>> if six.PY2:
+   ...     apage.setTitle('Plone in Español'.decode('utf8'))
+   ... else:
+   ...     apage.setTitle('Plone in Español')
    >>> getAdapter(apage, IStringSubstitution, 'title')()
-   'Plone in Español'
+   'Plone in Espa\xf1ol'
 
 
 
