@@ -101,7 +101,7 @@ Listing Available String Substitutions
     <Products.Five...SubstitutionInfo object at ...>
 
     >>> subinfo.substitutionList()[0]['category']
-    u'All Content'
+    'All Content'
 
 
 Basic Content
@@ -115,28 +115,28 @@ Ask for an adapter to get the URL::
     <plone.stringinterp.adapters.UrlSubstitution object at ...>
 
     >>> adapter()
-    u'http://nohost/plone/sandbox/a-page'
+    'http://nohost/plone/sandbox/a-page'
 
 'id' is an alias for id::
 
     >>> getAdapter(apage, IStringSubstitution, 'id')()
-    u'a-page'
+    'a-page'
 
 
 'parent_id' is an alias for id::
 
     >>> getAdapter(apage, IStringSubstitution, 'parent_id')()
-    u'sandbox'
+    'sandbox'
 
 'url' is an alias for absolute_url::
 
     >>> getAdapter(apage, IStringSubstitution, 'url')()
-    u'http://nohost/plone/sandbox/a-page'
+    'http://nohost/plone/sandbox/a-page'
 
 'parent_url' is container url::
 
     >>> getAdapter(apage, IStringSubstitution, 'parent_url')()
-    u'http://nohost/plone/sandbox'
+    'http://nohost/plone/sandbox'
 
 
 Minimal Dublin Core
@@ -145,12 +145,12 @@ Minimal Dublin Core
 Title
 
     >>> getAdapter(apage, IStringSubstitution, 'title')()
-    u'A page'
+    'A page'
 
 Parent title
 
     >>> getAdapter(apage, IStringSubstitution, 'parent_title')()
-    u'Sandbox'
+    'Sandbox'
 
 
 The rest of Minimal Dublin::
@@ -158,19 +158,23 @@ The rest of Minimal Dublin::
 Description
 
     >>> getAdapter(apage, IStringSubstitution, 'description')()
-    u'This is a short summary'
+    'This is a short summary'
 
 Content type
 
     >>> getAdapter(apage, IStringSubstitution, 'type')()
-    u'Page'
+    'Page'
 
 
 Let's try some non-ASCII::
 
-   >>> apage.setTitle('Plone in Español'.decode('utf8'))
-   >>> getAdapter(apage, IStringSubstitution, 'title')().encode('utf8')
-   'Plone in Espa\xc3\xb1ol'
+   >>> import six
+   >>> if six.PY2:
+   ...     apage.setTitle('Plone in Español'.decode('utf8'))
+   ... else:
+   ...     apage.setTitle('Plone in Español')
+   >>> getAdapter(apage, IStringSubstitution, 'title')()
+   'Plone in Espa\xf1ol'
 
 
 
@@ -180,10 +184,10 @@ Workflow Aware
 Review State
 
     >>> getAdapter(apage, IStringSubstitution, 'review_state')()
-    u'private'
+    'private'
 
     >>> getAdapter(apage, IStringSubstitution, 'review_state_title')()
-    u'Private'
+    'Private'
 
 
 IDublinCore
@@ -192,74 +196,74 @@ IDublinCore
 Creator
 
     >>> getAdapter(apage, IStringSubstitution, 'creator')()
-    u'test_user_1_'
+    'test_user_1_'
 
     >>> apage.setCreators( ('usertwo', 'userfive') )
     >>> getAdapter(apage, IStringSubstitution, 'creator')()
-    u'usertwo'
+    'usertwo'
 
 Creator Full Name
 
     >>> getAdapter(apage, IStringSubstitution, 'creator_fullname')()
-    u'User Two'
+    'User Two'
 
 Creator Email
 
     >>> getAdapter(apage, IStringSubstitution, 'creator_email')()
-    u'user@two.com'
+    'user@two.com'
 
 Creators
 
     >>> getAdapter(apage, IStringSubstitution, 'creators')()
-    u'usertwo, userfive'
+    'usertwo, userfive'
 
 Creators Emails
 
     >>> getAdapter(apage, IStringSubstitution, 'creators_emails')()
-    u'user@two.com, user@five.com'
+    'user@two.com, user@five.com'
 
 Contributors
 
     >>> getAdapter(apage, IStringSubstitution, 'contributors')()
-    u'contributor one, contributor two'
+    'contributor one, contributor two'
 
 Contributors Emails
 
     >>> getAdapter(apage, IStringSubstitution, 'contributors_emails')()
-    u''
+    ''
 
     >>> apage.setContributors( ('userthree', 'userfour') )
     >>> getAdapter(apage, IStringSubstitution, 'contributors_emails')()
-    u'user@three.com, user@four.com'
+    'user@three.com, user@four.com'
 
 Subject
     >>> getAdapter(apage, IStringSubstitution, 'subject')()
-    u'keyword one, keyword two'
+    'keyword one, keyword two'
 
 Keywords (alias for subject)
 
     >>> getAdapter(apage, IStringSubstitution, 'keywords')()
-    u'keyword one, keyword two'
+    'keyword one, keyword two'
 
 Format
 
     >>> getAdapter(apage, IStringSubstitution, 'format')()
-    u'text/plain'
+    'text/plain'
 
 Language
 
     >>> getAdapter(apage, IStringSubstitution, 'language')()
-    u'en'
+    'en'
 
 Rights
 
     >>> getAdapter(apage, IStringSubstitution, 'rights')()
-    u'copyright me'
+    'copyright me'
 
 Identifier
 
     >>> getAdapter(apage, IStringSubstitution, 'identifier')()
-     u'http://nohost/plone/sandbox/a-page'
+     'http://nohost/plone/sandbox/a-page'
 
 
 
@@ -297,27 +301,27 @@ IContentish -- emails for members having a role on context
 ----------------------------------------------------------
 
     >>> getAdapter(apage, IStringSubstitution, 'owner_emails')()
-    u'...user@three.com...'
+    '...user@three.com...'
 
-    >>> getAdapter(apage, IStringSubstitution, 'reviewer_emails')()
-    u'user@two.com, user@four.com'
+    >>> sorted(getAdapter(apage, IStringSubstitution, 'reviewer_emails')().split(', '))
+    ['user@four.com', 'user@two.com']
 
     >>> getAdapter(apage, IStringSubstitution, 'contributor_emails')()
-    u'user@five.com'
+    'user@five.com'
 
     >>> getAdapter(apage, IStringSubstitution, 'editor_emails')()
-    u'user@four.com'
+    'user@four.com'
 
     >>> getAdapter(apage, IStringSubstitution, 'reader_emails')()
-    u''
+    ''
 
-    >>> getAdapter(apage, IStringSubstitution, 'manager_emails')()
-    u'user@one.com, currentuser@foobar.com'
+    >>> sorted(getAdapter(apage, IStringSubstitution, 'manager_emails')().split(', '))
+    ['currentuser@foobar.com', 'user@one.com']
 
     >>> sorted(getAdapter(apage, IStringSubstitution, 'member_emails')(
     ...     ).split(', '))
-    [u'user@five.com', u'user@four.com', u'user@one.com',
-    u'user@three.com', u'user@two.com']
+    ['user@five.com', 'user@four.com', 'user@one.com',
+    'user@three.com', 'user@two.com']
 
 When a user is removed from the user folder, the ownership
 information, local roles, and group memberships for that user can
@@ -331,26 +335,26 @@ adapters can handle this case.
     >>> login(portal, TEST_USER_NAME)
 
     >>> getAdapter(apage, IStringSubstitution, 'owner_emails')()
-    u'currentuser@foobar.com'
+    'currentuser@foobar.com'
 
     >>> getAdapter(apage, IStringSubstitution, 'reviewer_emails')()
-    u'user@four.com'
+    'user@four.com'
 
-    >>> getAdapter(apage, IStringSubstitution, 'manager_emails')()
-    u'user@one.com, currentuser@foobar.com'
+    >>> sorted(getAdapter(apage, IStringSubstitution, 'manager_emails')().split(', '))
+    ['currentuser@foobar.com', 'user@one.com']
 
     >>> sorted(getAdapter(apage, IStringSubstitution, 'member_emails')(
     ...     ).split(', '))
-    [u'user@five.com', u'user@four.com', u'user@one.com']
+    ['user@five.com', 'user@four.com', 'user@one.com']
 
 IContentish -- info on current user
 -----------------------------------
 
     >>> getAdapter(apage, IStringSubstitution, 'user_email')()
-    u'currentuser@foobar.com'
+    'currentuser@foobar.com'
 
     >>> getAdapter(apage, IStringSubstitution, 'user_fullname')()
-    u'Current User'
+    'Current User'
 
     >>> getAdapter(apage, IStringSubstitution, 'user_id')() == TEST_USER_ID
     True
@@ -369,17 +373,17 @@ Inspect a version change (the most recent change)
 Initial revision
 
     >>> getAdapter(apage, IStringSubstitution, 'change_comment')()
-    u'change comment'
+    'change comment'
 
 Change title
 
     >>> getAdapter(apage, IStringSubstitution, 'change_title')()
-    u'Edit'
+    'Edit'
 
 Change type
 
     >>> getAdapter(apage, IStringSubstitution, 'change_type')()
-    u'versioning'
+    'versioning'
 
 Change author
 
@@ -395,7 +399,7 @@ last change comment is unchanged.
     >>> wf_tool.doActionFor(apage, 'publish', comment='publish it!')
 
     >>> getAdapter(apage, IStringSubstitution, 'change_comment')()
-    u'change comment'
+    'change comment'
 
 Let's create a new object in order to bypass the caching; we'll
 use it to test a workflow change
@@ -410,22 +414,22 @@ use it to test a workflow change
 Review state
 
     >>> getAdapter(apage, IStringSubstitution, 'review_state')()
-    u'published'
+    'published'
 
 Comment
 
     >>> getAdapter(apage, IStringSubstitution, 'change_comment')()
-    u'publish it!'
+    'publish it!'
 
 Change title
 
     >>> getAdapter(apage, IStringSubstitution, 'change_title')()
-    u'Publish'
+    'Publish'
 
 Change type
 
     >>> getAdapter(apage, IStringSubstitution, 'change_type')()
-    u'workflow'
+    'workflow'
 
 Change author
 
@@ -438,9 +442,9 @@ Portal infos
 Portal title
 
     >>> getAdapter(apage, IStringSubstitution, 'portal_title')()
-    u'Plone site'
+    'Plone site'
 
 Portal URL
 
     >>> getAdapter(apage, IStringSubstitution, 'portal_url')()
-    u'http://nohost/plone'
+    'http://nohost/plone'
