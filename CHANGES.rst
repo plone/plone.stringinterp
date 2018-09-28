@@ -4,18 +4,10 @@ Changelog
 1.3.0 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
 New features:
 
 - Add support for Python 3.
   [pbauer]
-
-Bug fixes:
-
-- *add item here*
 
 
 1.2.1 (2016-11-18)
