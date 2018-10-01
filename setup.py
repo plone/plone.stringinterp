@@ -25,7 +25,7 @@ setup(
     keywords='Plone Zope Interpolation',
     author='Plone Foundation',
     author_email='plone-developers@lists.sourceforge.net',
-    url='https://pypi.python.org/pypi/plone.stringinterp',
+    url='https://pypi.org/project/plone.stringinterp',
     license='GPL version 2',
     packages=find_packages(exclude=['ez_setup']),
     namespace_packages=['plone'],
