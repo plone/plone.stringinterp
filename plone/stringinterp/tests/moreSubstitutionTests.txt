@@ -248,7 +248,7 @@ Keywords (alias for subject)
 Format
 
     >>> getAdapter(apage, IStringSubstitution, 'format')()
-    'text/plain'
+    'text/html'
 
 Language
 
