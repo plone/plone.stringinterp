@@ -10,7 +10,6 @@ Copyright (c) 2009 Plone Foundation.
 from zope.interface import implementer, Interface, alsoProvides
 from zope.component import adapter
 from zope.i18n import translate
-from zope.site.hooks import getSite
 
 from AccessControl import Unauthorized
 from Acquisition import aq_inner, aq_parent, aq_get, Implicit
@@ -30,6 +29,15 @@ from plone.memoize.request import memoize_diy_request
 from plone.stringinterp import _
 from plone.stringinterp.interfaces import IStringSubstitution
 from plone.stringinterp.interfaces import IContextWrapper
+
+# BBB: on Zope 5 the fallback will not work anymore,
+# as long as we want compatibility with Zope 4 and earlier
+# we need to keep the fallback
+try:
+    from zope.component.hooks import getSite
+except:
+    from zope.site.hooks import getSite
+
 
 
 @implementer(IContextWrapper)
