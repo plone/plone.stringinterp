@@ -1,0 +1,5 @@
+pyupgrade, drop support for Python < 3.8.
+isort, black, manual edits.
+Fix deprecation warnings for imports from Products.CMFPlone.
+Import and depend from plone.base.
+

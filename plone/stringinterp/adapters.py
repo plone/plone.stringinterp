@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# encoding: utf-8
 """
 adapters.py
 
@@ -7,43 +6,38 @@ Created by Steve McMahon on 2009-08-12.
 Copyright (c) 2009 Plone Foundation.
 """
 
-from zope.interface import implementer, Interface, alsoProvides
-from zope.component import adapter
-from zope.i18n import translate
-
 from AccessControl import Unauthorized
-from Acquisition import aq_inner, aq_parent, aq_get, Implicit
-
 from AccessControl.interfaces import IRoleManager
-from Products.PlonePAS.interfaces.group import IGroupData
-from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.interfaces import (
-    IContentish, IMinimalDublinCore, IWorkflowAware, IDublinCore,
-    ICatalogableDublinCore)
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFPlone.utils import safe_unicode
-from Products.CMFPlone.i18nl10n import ulocalized_time
-
+from Acquisition import aq_get
+from Acquisition import aq_inner
+from Acquisition import aq_parent
+from Acquisition import Implicit
+from plone.base import PloneMessageFactory as _
+from plone.base.i18nl10n import ulocalized_time
+from plone.base.utils import safe_text
 from plone.memoize.request import memoize_diy_request
-
-from plone.stringinterp import _
-from plone.stringinterp.interfaces import IStringSubstitution
 from plone.stringinterp.interfaces import IContextWrapper
-
-# BBB: on Zope 5 the fallback will not work anymore,
-# as long as we want compatibility with Zope 4 and earlier
-# we need to keep the fallback
-try:
-    from zope.component.hooks import getSite
-except:
-    from zope.site.hooks import getSite
-
+from plone.stringinterp.interfaces import IStringSubstitution
+from Products.CMFCore.interfaces import ICatalogableDublinCore
+from Products.CMFCore.interfaces import IContentish
+from Products.CMFCore.interfaces import IDublinCore
+from Products.CMFCore.interfaces import IMinimalDublinCore
+from Products.CMFCore.interfaces import IWorkflowAware
+from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.WorkflowCore import WorkflowException
+from Products.PlonePAS.interfaces.group import IGroupData
+from zope.component import adapter
+from zope.component.hooks import getSite
+from zope.i18n import translate
+from zope.interface import alsoProvides
+from zope.interface import implementer
+from zope.interface import Interface
 
 
 @implementer(IContextWrapper)
 class ContextWrapper(Implicit):
-    """ Wrapper for context
-    """
+    """Wrapper for context"""
+
     def __init__(self, context):
         self.context = context
 
@@ -66,9 +60,9 @@ class ContextWrapper(Implicit):
 
 
 @implementer(IStringSubstitution)
-class BaseSubstitution(object):
-    """ Base substitution
-    """
+class BaseSubstitution:
+    """Base substitution"""
+
     def __init__(self, context):
         if IContextWrapper.providedBy(context):
             self.wrapper = context
@@ -82,16 +76,15 @@ class BaseSubstitution(object):
     # not generating unauth exceptions or returning non-unicode.
     def __call__(self):
         try:
-            return safe_unicode(self.safe_call())
+            return safe_text(self.safe_call())
         except Unauthorized:
-            return _(u'Unauthorized')
+            return _("Unauthorized")
 
 
 @adapter(IContentish)
 class UrlSubstitution(BaseSubstitution):
-
-    category = _(u'All Content')
-    description = _(u'URL')
+    category = _("All Content")
+    description = _("URL")
 
     def safe_call(self):
         return self.context.absolute_url()
@@ -99,9 +92,8 @@ class UrlSubstitution(BaseSubstitution):
 
 @adapter(Interface)
 class ParentIdSubstitution(BaseSubstitution):
-
-    category = _(u'All Content')
-    description = _(u"Identifier of the parent content or login of managed user")
+    category = _("All Content")
+    description = _("Identifier of the parent content or login of managed user")
 
     def safe_call(self):
         return aq_parent(self.context).getId()
@@ -109,9 +101,8 @@ class ParentIdSubstitution(BaseSubstitution):
 
 @adapter(Interface)
 class IdSubstitution(BaseSubstitution):
-
-    category = _(u'All Content')
-    description = _(u"Identifier of the content or login of managed user")
+    category = _("All Content")
+    description = _("Identifier of the content or login of managed user")
 
     def safe_call(self):
         return self.context.getId()
@@ -119,19 +110,17 @@ class IdSubstitution(BaseSubstitution):
 
 @adapter(IContentish)
 class ParentUrlSubstitution(BaseSubstitution):
-
-    category = _(u'All Content')
-    description = _(u"Folder URL")
+    category = _("All Content")
+    description = _("Folder URL")
 
     def safe_call(self):
-        return aq_get(aq_parent(self.context), 'absolute_url')()
+        return aq_get(aq_parent(self.context), "absolute_url")()
 
 
 @adapter(IMinimalDublinCore)
 class TitleSubstitution(BaseSubstitution):
-
-    category = _(u'Dublin Core')
-    description = _(u'Title')
+    category = _("Dublin Core")
+    description = _("Title")
 
     def safe_call(self):
         return self.context.Title()
@@ -139,19 +128,17 @@ class TitleSubstitution(BaseSubstitution):
 
 @adapter(IContentish)
 class ParentTitleSubstitution(BaseSubstitution):
-
-    category = _(u'All Content')
-    description = _(u'Parent title')
+    category = _("All Content")
+    description = _("Parent title")
 
     def safe_call(self):
-        return aq_get(aq_parent(self.context), 'Title')()
+        return aq_get(aq_parent(self.context), "Title")()
 
 
 @adapter(IMinimalDublinCore)
 class DescriptionSubstitution(BaseSubstitution):
-
-    category = _(u'Dublin Core')
-    description = _(u'Description')
+    category = _("Dublin Core")
+    description = _("Description")
 
     def safe_call(self):
         return self.context.Description()
@@ -159,9 +146,8 @@ class DescriptionSubstitution(BaseSubstitution):
 
 @adapter(IMinimalDublinCore)
 class TypeSubstitution(BaseSubstitution):
-
-    category = _(u'Dublin Core')
-    description = _(u'Content Type')
+    category = _("Dublin Core")
+    description = _("Content Type")
 
     def safe_call(self):
         return translate(self.context.Type(), context=self.context.REQUEST)
@@ -169,33 +155,31 @@ class TypeSubstitution(BaseSubstitution):
 
 @adapter(IDublinCore)
 class CreatorSubstitution(BaseSubstitution):
-
-    category = _(u'Dublin Core')
-    description = _(u'Creator Id')
+    category = _("Dublin Core")
+    description = _("Creator Id")
 
     def safe_call(self):
         for creator in self.context.listCreators():
             return creator
-        return ''
+        return ""
 
 
 @adapter(IContentish)
 class CreatorFullNameSubstitution(CreatorSubstitution):
-
-    category = _(u'Dublin Core')
-    description = _(u'Creator Full Name')
+    category = _("Dublin Core")
+    description = _("Creator Full Name")
 
     def safe_call(self):
-        creator = super(CreatorFullNameSubstitution, self).safe_call()
+        creator = super().safe_call()
         if not creator:
-            return ''
+            return ""
 
         pm = getToolByName(self.context, "portal_membership")
         member = pm.getMemberById(creator)
         if not member:
             return creator
 
-        fname = member.getProperty('fullname', None)
+        fname = member.getProperty("fullname", None)
         if not fname:
             return creator
         return fname
@@ -203,39 +187,36 @@ class CreatorFullNameSubstitution(CreatorSubstitution):
 
 @adapter(IDublinCore)
 class CreatorEmailSubstitution(CreatorSubstitution):
-
-    category = _(u'Dublin Core')
-    description = _(u'Creator E-Mail')
+    category = _("Dublin Core")
+    description = _("Creator E-Mail")
 
     def safe_call(self):
-        creator = super(CreatorEmailSubstitution, self).safe_call()
+        creator = super().safe_call()
         if not creator:
-            return ''
+            return ""
         pm = getToolByName(self.context, "portal_membership")
         member = pm.getMemberById(creator)
         if not member:
-            return ''
-        email = member.getProperty('email', '')
+            return ""
+        email = member.getProperty("email", "")
         if not email:
-            return ''
+            return ""
         return email
 
 
 @adapter(IDublinCore)
 class CreatorsSubstitution(BaseSubstitution):
-
-    category = _(u'Dublin Core')
-    description = _(u'Creators Ids')
+    category = _("Dublin Core")
+    description = _("Creators Ids")
 
     def safe_call(self):
-        return  ', '.join(self.context.listCreators())
+        return ", ".join(self.context.listCreators())
 
 
 @adapter(IDublinCore)
 class CreatorsEmailsSubstitution(BaseSubstitution):
-
-    category = _(u'Dublin Core')
-    description = _(u'Creators E-Mails')
+    category = _("Dublin Core")
+    description = _("Creators E-Mails")
 
     def safe_call(self):
         creators = self.context.listCreators()
@@ -245,28 +226,26 @@ class CreatorsEmailsSubstitution(BaseSubstitution):
             member = pm.getMemberById(creator)
             if not member:
                 continue
-            email = member.getProperty('email', None)
+            email = member.getProperty("email", None)
             if not email:
                 continue
             emails.append(email)
-        return ', '.join(emails)
+        return ", ".join(emails)
 
 
 @adapter(IDublinCore)
 class ContributorsSubstitution(BaseSubstitution):
-
-    category = _(u'Dublin Core')
-    description = _(u'Contributors Ids')
+    category = _("Dublin Core")
+    description = _("Contributors Ids")
 
     def safe_call(self):
-        return  ', '.join(self.context.listContributors())
+        return ", ".join(self.context.listContributors())
 
 
 @adapter(IDublinCore)
 class ContributorsEmailsSubstitution(BaseSubstitution):
-
-    category = (u'Dublin Core')
-    description = _(u'Contributors E-Mails')
+    category = "Dublin Core"
+    description = _("Contributors E-Mails")
 
     def safe_call(self):
         contributors = self.context.listContributors()
@@ -276,102 +255,93 @@ class ContributorsEmailsSubstitution(BaseSubstitution):
             member = pm.getMemberById(contributor)
             if not member:
                 continue
-            email = member.getProperty('email', None)
+            email = member.getProperty("email", None)
             if not email:
                 continue
             emails.append(email)
-        return ', '.join(emails)
+        return ", ".join(emails)
 
 
 @adapter(IDublinCore)
 class SubjectSubstitution(BaseSubstitution):
-
-    category = _(u'Dublin Core')
-    description = _(u'Subject')
+    category = _("Dublin Core")
+    description = _("Subject")
 
     def safe_call(self):
-        return  ', '.join(self.context.Subject())
+        return ", ".join(self.context.Subject())
 
 
 @adapter(IDublinCore)
 class FormatSubstitution(BaseSubstitution):
-
-    category = _(u'Dublin Core')
-    description = _(u'Format')
+    category = _("Dublin Core")
+    description = _("Format")
 
     def safe_call(self):
-        return  self.context.Format()
+        return self.context.Format()
 
 
 @adapter(IDublinCore)
 class LanguageSubstitution(BaseSubstitution):
-
-    category = _(u'Dublin Core')
-    description = _(u'Language')
+    category = _("Dublin Core")
+    description = _("Language")
 
     def safe_call(self):
-        return  self.context.Language()
+        return self.context.Language()
 
 
 @adapter(IDublinCore)
 class IdentifierSubstitution(BaseSubstitution):
-
-    category = _(u'Dublin Core')
-    description = _(u'Identifier, actually URL of the content')
+    category = _("Dublin Core")
+    description = _("Identifier, actually URL of the content")
 
     def safe_call(self):
-        return  self.context.Identifier()
+        return self.context.Identifier()
 
 
 @adapter(IDublinCore)
 class RightsSubstitution(BaseSubstitution):
-
-    category = _(u'Dublin Core')
-    description = _(u'Rights')
+    category = _("Dublin Core")
+    description = _("Rights")
 
     def safe_call(self):
-        return  self.context.Rights()
+        return self.context.Rights()
 
 
 @adapter(IWorkflowAware)
 class ReviewStateSubstitution(BaseSubstitution):
-
-    category = _(u'Workflow')
-    description = _(u'Review State')
+    category = _("Workflow")
+    description = _("Review State")
 
     def safe_call(self):
-        wft = getToolByName(self.context, 'portal_workflow')
-        return wft.getInfoFor(self.context, 'review_state')
+        wft = getToolByName(self.context, "portal_workflow")
+        return wft.getInfoFor(self.context, "review_state")
 
 
 @adapter(IWorkflowAware)
 class ReviewStateTitleSubstitution(BaseSubstitution):
-
-    category = _(u'Workflow')
-    description = _(u'Review State Title')
+    category = _("Workflow")
+    description = _("Review State Title")
 
     def safe_call(self):
-        wft = getToolByName(self.context, 'portal_workflow')
-        review_state = wft.getInfoFor(self.context, 'review_state')
-        return _(wft.getTitleForStateOnType(review_state,
-                                            self.context.portal_type))
+        wft = getToolByName(self.context, "portal_workflow")
+        review_state = wft.getInfoFor(self.context, "review_state")
+        return _(wft.getTitleForStateOnType(review_state, self.context.portal_type))
 
 
 class DateSubstitution(BaseSubstitution):
-
     def formatDate(self, adate):
         try:
-            return safe_unicode(
-               ulocalized_time(adate, long_format=True, context=self.context))
+            return safe_text(
+                ulocalized_time(adate, long_format=True, context=self.context)
+            )
         except ValueError:
-            return u'???'
+            return "???"
 
 
 @adapter(ICatalogableDublinCore)
 class CreatedSubstitution(DateSubstitution):
-
-    category = _(u'Dublin Core')
-    description = _(u'Date Created')
+    category = _("Dublin Core")
+    description = _("Date Created")
 
     def safe_call(self):
         return self.formatDate(self.context.created())
@@ -379,9 +349,8 @@ class CreatedSubstitution(DateSubstitution):
 
 @adapter(ICatalogableDublinCore)
 class EffectiveSubstitution(DateSubstitution):
-
-    category = _(u'Dublin Core')
-    description = _(u'Date Effective')
+    category = _("Dublin Core")
+    description = _("Date Effective")
 
     def safe_call(self):
         return self.formatDate(self.context.effective())
@@ -389,9 +358,8 @@ class EffectiveSubstitution(DateSubstitution):
 
 @adapter(ICatalogableDublinCore)
 class ExpiresSubstitution(DateSubstitution):
-
-    category = _(u'Dublin Core')
-    description = _(u'Date Expires')
+    category = _("Dublin Core")
+    description = _("Date Expires")
 
     def safe_call(self):
         return self.formatDate(self.context.expires())
@@ -399,9 +367,8 @@ class ExpiresSubstitution(DateSubstitution):
 
 @adapter(ICatalogableDublinCore)
 class ModifiedSubstitution(DateSubstitution):
-
-    category = _(u'Dublin Core')
-    description = _(u'Date Modified')
+    category = _("Dublin Core")
+    description = _("Date Modified")
 
     def safe_call(self):
         return self.formatDate(self.context.modified())
@@ -410,9 +377,8 @@ class ModifiedSubstitution(DateSubstitution):
 # A base class for adapters that need member information
 @adapter(IContentish)
 class MemberSubstitution(BaseSubstitution):
-
     def __init__(self, context):
-        super(MemberSubstitution, self).__init__(context)
+        super().__init__(context)
         self.mtool = getToolByName(self.context, "portal_membership")
         self.gtool = getToolByName(self.context, "portal_groups")
 
@@ -441,35 +407,35 @@ class MemberSubstitution(BaseSubstitution):
         return self.getPropsForMembers(self.getMembersFromIds(ids), propname)
 
 
-# A base class for all the role->email list adapters
+# A base class for all the role-&gt;email list adapters
 @adapter(IContentish)
 class MailAddressSubstitution(MemberSubstitution):
-
     def getEmailsForRole(self, role):
-
         portal = getSite()
-        acl_users = getToolByName(portal, 'acl_users')
+        acl_users = getToolByName(portal, "acl_users")
 
         # get a set of ids of members with the global role
-        ids = set([p[0] for p in acl_users.portal_role_manager.listAssignedPrincipals(role)])
+        ids = {p[0] for p in acl_users.portal_role_manager.listAssignedPrincipals(role)}
 
         # union with set of ids of members with the local role
-        ids |= set([id for id, irole
-                       in acl_users._getAllLocalRoles(self.context).items()
-                       if role in irole])
+        ids |= {
+            id
+            for id, irole in acl_users._getAllLocalRoles(self.context).items()
+            if role in irole
+        }
 
         # get members from group or member ids
         members = _recursiveGetMembersFromIds(portal, ids)
 
         # get emails
-        return u', '.join(self.getPropsForMembers(members, 'email'))
+        return ", ".join(self.getPropsForMembers(members, "email"))
 
 
 def _recursiveGetMembersFromIds(portal, group_and_user_ids):
-    """ get members from a list of group and member ids """
+    """get members from a list of group and member ids"""
 
-    gtool = getToolByName(portal, 'portal_groups')
-    mtool = getToolByName(portal, 'portal_membership')
+    gtool = getToolByName(portal, "portal_groups")
+    mtool = getToolByName(portal, "portal_membership")
     members = set()
     seen = set()
 
@@ -488,7 +454,8 @@ def _recursiveGetMembersFromIds(portal, group_and_user_ids):
 
                 seen.add(group_or_user_id)
                 users = users.union(
-                            recursiveGetGroupUsers(mtool, gtool, seen, group_or_user))
+                    recursiveGetGroupUsers(mtool, gtool, seen, group_or_user)
+                )
             elif group_or_user is not None:
                 # Other group data PAS plugins might not filter no
                 # longer existing group members.
@@ -510,110 +477,100 @@ def _recursiveGetMembersFromIds(portal, group_and_user_ids):
 
 
 class OwnerEmailSubstitution(MailAddressSubstitution):
-
-    category = _(u'Local Roles')
-    description = _(u'Owners E-Mails')
+    category = _("Local Roles")
+    description = _("Owners E-Mails")
 
     def safe_call(self):
-        return self.getEmailsForRole('Owner')
+        return self.getEmailsForRole("Owner")
 
 
 class ReviewerEmailSubstitution(MailAddressSubstitution):
-
-    category = _(u'Local Roles')
-    description = _(u'Reviewers E-Mails')
+    category = _("Local Roles")
+    description = _("Reviewers E-Mails")
 
     def safe_call(self):
-        return self.getEmailsForRole('Reviewer')
+        return self.getEmailsForRole("Reviewer")
 
 
 class ReaderEmailSubstitution(MailAddressSubstitution):
-
-    category = _(u'Local Roles')
-    description = _(u'Readers E-Mails')
+    category = _("Local Roles")
+    description = _("Readers E-Mails")
 
     def safe_call(self):
-        return self.getEmailsForRole('Reader')
+        return self.getEmailsForRole("Reader")
 
 
 class ContributorEmailSubstitution(MailAddressSubstitution):
-
-    category = _(u'Local Roles')
-    description = _(u'Contributors E-Mails')
+    category = _("Local Roles")
+    description = _("Contributors E-Mails")
 
     def safe_call(self):
-        return self.getEmailsForRole('Contributor')
+        return self.getEmailsForRole("Contributor")
 
 
 class EditorEmailSubstitution(MailAddressSubstitution):
-
-    category = _(u'Local Roles')
-    description = _(u'Editors E-Mails')
+    category = _("Local Roles")
+    description = _("Editors E-Mails")
 
     def safe_call(self):
-        return self.getEmailsForRole('Editor')
+        return self.getEmailsForRole("Editor")
 
 
 class ManagerEmailSubstitution(MailAddressSubstitution):
-
-    category = _(u'Local Roles')
-    description = _(u'Managers E-Mails')
+    category = _("Local Roles")
+    description = _("Managers E-Mails")
 
     def safe_call(self):
-        return self.getEmailsForRole('Manager')
+        return self.getEmailsForRole("Manager")
 
 
 class MemberEmailSubstitution(MailAddressSubstitution):
-
-    category = _(u'Local Roles')
-    description = _(u'Members E-Mails')
+    category = _("Local Roles")
+    description = _("Members E-Mails")
 
     def safe_call(self):
-        return self.getEmailsForRole('Member')
+        return self.getEmailsForRole("Member")
 
 
 @adapter(IContentish)
 class UserEmailSubstitution(BaseSubstitution):
-
-    category = _(u'Current User')
-    description = _(u'E-Mail Address')
+    category = _("Current User")
+    description = _("E-Mail Address")
 
     def safe_call(self):
         pm = getToolByName(self.context, "portal_membership")
         if not pm.isAnonymousUser():
             user = pm.getAuthenticatedMember()
             if user is not None:
-                email = user.getProperty('email', None)
+                email = user.getProperty("email", None)
                 if email:
                     return email
-        return u''
+        return ""
 
 
 @adapter(IContentish)
 class UserFullNameSubstitution(BaseSubstitution):
-
-    category = _(u'Current User')
-    description = _(u'Full Name')
+    category = _("Current User")
+    description = _("Full Name")
 
     def safe_call(self):
         pm = getToolByName(self.context, "portal_membership")
         if not pm.isAnonymousUser():
             user = pm.getAuthenticatedMember()
             if user is not None:
-                fname = user.getProperty('fullname', None)
+                fname = user.getProperty("fullname", None)
                 if fname:
                     return fname
                 else:
                     return user.getId()
 
-        return u''
+        return ""
 
 
 @adapter(IContentish)
 class UserIdSubstitution(BaseSubstitution):
-
-    category = _(u'Current User')
-    description = _(u'Id')
+    category = _("Current User")
+    description = _("Id")
 
     def safe_call(self):
         pm = getToolByName(self.context, "portal_membership")
@@ -621,7 +578,7 @@ class UserIdSubstitution(BaseSubstitution):
             user = pm.getAuthenticatedMember()
             if user is not None:
                 return user.getId()
-        return u''
+        return ""
 
 
 # memoize on the request an expensive function called by the
@@ -635,31 +592,33 @@ def _lastChange(request, context):
     elif not last_revision:
         return workflow_change
 
-    if workflow_change and last_revision and \
-       workflow_change.get('time') > last_revision.get('time'):
+    if (
+        workflow_change
+        and last_revision
+        and workflow_change.get("time") > last_revision.get("time")
+    ):
         return workflow_change
 
     return last_revision
 
 
 def _lastWorkflowChange(context):
-    workflow = getToolByName(context, 'portal_workflow')
+    workflow = getToolByName(context, "portal_workflow")
     try:
-        review_history = workflow.getInfoFor(context, 'review_history')
+        review_history = workflow.getInfoFor(context, "review_history")
     except WorkflowException:
         return {}
 
     # filter out automatic transitions.
-    review_history = [r for r in review_history if r['action']]
+    review_history = [r for r in review_history if r["action"]]
 
     if review_history:
         r = review_history[-1]
-        r['type'] = 'workflow'
-        r['transition_title'] = \
-            workflow.getTitleForTransitionOnType(
-             r['action'],
-             context.portal_type)
-        r['actorid'] = r['actor']
+        r["type"] = "workflow"
+        r["transition_title"] = workflow.getTitleForTransitionOnType(
+            r["action"], context.portal_type
+        )
+        r["actorid"] = r["actor"]
     else:
         r = {}
 
@@ -674,17 +633,18 @@ def _lastRevision(context):
         if history:
             # history = ImplicitAcquisitionWrapper(history, pa)
             meta = history.retrieve(
-               history.getLength(countPurged=False)-1,
-               countPurged=False,
-              )['metadata']['sys_metadata']
-            return dict(type='versioning',
-                    action=_(u"edit"),
-                    transition_title=_(u"Edit"),
-                    actorid=meta["principal"],
-                    time=meta["timestamp"],
-                    comments=meta['comment'],
-                    review_state=meta["review_state"],
-                    )
+                history.getLength(countPurged=False) - 1,
+                countPurged=False,
+            )["metadata"]["sys_metadata"]
+            return dict(
+                type="versioning",
+                action=_("edit"),
+                transition_title=_("Edit"),
+                actorid=meta["principal"],
+                time=meta["timestamp"],
+                comments=meta["comment"],
+                review_state=meta["review_state"],
+            )
 
     return {}
 
@@ -692,70 +652,63 @@ def _lastRevision(context):
 # a base class for substitutions that use
 # last revision or workflow information
 class ChangeSubstitution(BaseSubstitution):
-
     def lastChangeMetadata(self, id):
-        return  _lastChange(self.context.REQUEST, self.context).get(id, '')
+        return _lastChange(self.context.REQUEST, self.context).get(id, "")
 
 
 @adapter(IContentish)
 class LastChangeCommentSubstitution(ChangeSubstitution):
-
-    category = _(u'History')
-    description = _(u'Comment')
+    category = _("History")
+    description = _("Comment")
 
     def safe_call(self):
-        return self.lastChangeMetadata('comments')
+        return self.lastChangeMetadata("comments")
 
 
 @adapter(IContentish)
 class LastChangeTitleSubstitution(ChangeSubstitution):
-
-    category = _(u'History')
-    description = _(u'Transition title')
+    category = _("History")
+    description = _("Transition title")
 
     def safe_call(self):
-        return self.lastChangeMetadata('transition_title')
+        return self.lastChangeMetadata("transition_title")
 
 
 @adapter(IContentish)
 class LastChangeTypeSubstitution(ChangeSubstitution):
-
-    category = _(u'History')
-    description = _(u'Change type')
+    category = _("History")
+    description = _("Change type")
 
     def safe_call(self):
-        return self.lastChangeMetadata('type')
+        return self.lastChangeMetadata("type")
 
 
 @adapter(IContentish)
 class LastChangeActorIdSubstitution(ChangeSubstitution):
-
-    category = _(u'History')
-    description = _(u'Change author')
+    category = _("History")
+    description = _("Change author")
 
     def safe_call(self):
-        return self.lastChangeMetadata('actorid')
+        return self.lastChangeMetadata("actorid")
 
 
 class PortalSubstitution(BaseSubstitution):
-
-    category = _(u'Portal')
+    category = _("Portal")
 
     def __init__(self, context):
         BaseSubstitution.__init__(self, context)
-        self.portal = getToolByName(self.context, 'portal_url').getPortalObject()
+        self.portal = getToolByName(self.context, "portal_url").getPortalObject()
+
 
 class PortalURLSubstitution(PortalSubstitution):
-
-    description = _(u'Portal URL')
+    description = _("Portal URL")
 
     def safe_call(self):
         return self.portal.absolute_url()
 
 
 class PortalTitleSubstitution(PortalSubstitution):
-
-    description = _(u'Portal title')
+    description = _("Portal title")
 
     def safe_call(self):
         return self.portal.Title()
