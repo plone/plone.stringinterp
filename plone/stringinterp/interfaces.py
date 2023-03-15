@@ -56,8 +56,8 @@ class IContextWrapper(Interface):
 
     Usage:
 
-    &gt;&gt;&gt; wrapper = IContextWrapper(obj)(m1='A message', m2="Another one")
-    &gt;&gt;&gt; notify(CustomEvent(wrapper))
+    >>> wrapper = IContextWrapper(obj)(m1='A message', m2="Another one")
+    >>> notify(CustomEvent(wrapper))
     """
 
     def __call__(kwargs):
