@@ -407,7 +407,7 @@ class MemberSubstitution(BaseSubstitution):
         return self.getPropsForMembers(self.getMembersFromIds(ids), propname)
 
 
-# A base class for all the role-&gt;email list adapters
+# A base class for all the role to email list adapters
 @adapter(IContentish)
 class MailAddressSubstitution(MemberSubstitution):
     def getEmailsForRole(self, role):
