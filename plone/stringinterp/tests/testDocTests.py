@@ -18,12 +18,12 @@ def test_suite():
         [
             layered(
                 doctest.DocFileSuite(
-                    f,
+                    test_file,
                     package="plone.stringinterp.tests",
                     optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,
                 ),
                 layer=PLONE_APP_CONTENTTYPES_INTEGRATION_TESTING,
             )
-            for f in testfiles
+            for test_file in testfiles
         ]
     )
