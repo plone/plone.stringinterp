@@ -8,7 +8,7 @@ import unittest
 testfiles = (
     "substitutionTests.txt",
     "moreSubstitutionTests.txt",
-    "" "wrapperTests.txt",
+    "wrapperTests.txt",
     "interpolationTests.txt",
 )
 
