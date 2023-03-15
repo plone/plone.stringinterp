@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# encoding: utf-8
 """
 interfaces.py
 
@@ -7,12 +6,10 @@ Created by Steve McMahon on 2009-09-20.
 Copyright (c) 2009 Plone Foundation.
 """
 
-from zope.component import getSiteManager
-
-from Products.Five import BrowserView
-
+from plone.base import PloneMessageFactory as _
 from plone.stringinterp.interfaces import IStringSubstitution
-from plone.stringinterp import _
+from Products.Five import BrowserView
+from zope.component import getSiteManager
 
 
 def find_adapters(reg):
@@ -45,10 +42,9 @@ class SubstitutionInfo(BrowserView):
         categories = {}
         for a in find_adapters(getSiteManager()):
             id = a.name
-            cat = getattr(a.factory, 'category', _(u'Miscellaneous'))
-            desc = getattr(a.factory, 'description', u'')
-            categories.setdefault(cat, []).append(
-              {'id': id, 'description': desc})
+            cat = getattr(a.factory, "category", _("Miscellaneous"))
+            desc = getattr(a.factory, "description", "")
+            categories.setdefault(cat, []).append({"id": id, "description": desc})
 
         # rearrange again into a sorted list
         res = []
@@ -57,7 +53,7 @@ class SubstitutionInfo(BrowserView):
         for key in sorted(keys, key=lambda s: s.lower()):
             acat = categories[key]
             # sort by id, ignoring case
-            acat = sorted(acat, key=lambda i: i['id'].lower())
-            res.append({'category': key, 'items': acat})
+            acat = sorted(acat, key=lambda i: i["id"].lower())
+            res.append({"category": key, "items": acat})
 
         return res

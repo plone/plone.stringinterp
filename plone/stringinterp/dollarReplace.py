@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# encoding: utf-8
 """
 dollarReplace.py
 
@@ -7,29 +6,30 @@ Created by Steve McMahon on 2009-08-13.
 Copyright (c) 2009 Plone Foundation.
 """
 
+from AccessControl import Unauthorized
+from plone.stringinterp.interfaces import IStringInterpolator
+from plone.stringinterp.interfaces import IStringSubstitution
+from Products.CMFCore.interfaces import IContentish
+from zope.component import adapter
+from zope.component import ComponentLookupError
+from zope.component import getAdapter
+from zope.interface import implementer
+
 import string
 
-from zope.interface import implementer
-from zope.component import adapts, getAdapter, ComponentLookupError
 
-from AccessControl import Unauthorized
-
-from Products.CMFCore.interfaces import IContentish
-
-from plone.stringinterp.interfaces import IStringSubstitution, IStringInterpolator
+_marker = "_bad_"
 
 
-_marker = u'_bad_'
-
-class LazyDict(object):
-    """ cached lookup via adapter """
+class LazyDict:
+    """cached lookup via adapter"""
 
     def __init__(self, context):
         self.context = context
         self._cache = {}
 
     def __getitem__(self, key):
-        if key and key[0] not in ['_', '.']:
+        if key and key[0] not in ["_", "."]:
             res = self._cache.get(key)
             if res is None:
                 try:
@@ -37,7 +37,7 @@ class LazyDict(object):
                 except ComponentLookupError:
                     res = _marker
                 except Unauthorized:
-                    res = u'Unauthorized'
+                    res = "Unauthorized"
 
                 self._cache[key] = res
 
@@ -48,9 +48,8 @@ class LazyDict(object):
 
 
 @implementer(IStringInterpolator)
-class Interpolator(object):
-    adapts(IContentish)
-
+@adapter(IContentish)
+class Interpolator:
     def __init__(self, context):
         self._ldict = LazyDict(context)
 
