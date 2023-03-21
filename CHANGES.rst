@@ -8,6 +8,18 @@ Changelog
 
 .. towncrier release notes start
 
+2.0.0 (2023-03-21)
+------------------
+
+Breaking changes:
+
+
+- pyupgrade, drop support for Python < 3.8.
+  isort, black, manual edits.
+  Fix deprecation warnings for imports from Products.CMFPlone.
+  Import and depend from plone.base. (#15)
+
+
 1.3.3 (2020-09-07)
 ------------------
 
