@@ -39,10 +39,11 @@ setup(
         "plone.base",
         "plone.memoize",
         "zope.i18n",
+        "Products.PlonePAS",
     ],
     extras_require={
         "test": [
-            "plone.app.contenttypes",
+            "plone.app.contenttypes[test]",
             "plone.app.testing",
             "plone.testing",
         ],
