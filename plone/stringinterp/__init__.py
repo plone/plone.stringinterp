@@ -1,1 +1,1 @@
-from .dollarReplace import Interpolator
+from .dollarReplace import Interpolator  # noqa: F401
