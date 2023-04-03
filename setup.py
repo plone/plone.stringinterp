@@ -33,15 +33,17 @@ setup(
     namespace_packages=["plone"],
     include_package_data=True,
     zip_safe=False,
+    python_requires=">=3.8",
     install_requires=[
         "setuptools",
         "plone.base",
         "plone.memoize",
         "zope.i18n",
+        "Products.PlonePAS",
     ],
     extras_require={
         "test": [
-            "plone.app.contenttypes",
+            "plone.app.contenttypes[test]",
             "plone.app.testing",
             "plone.testing",
         ],
