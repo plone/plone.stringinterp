@@ -38,7 +38,7 @@ setup(
         "setuptools",
         "plone.base",
         "plone.memoize",
-        "zope.i18n",
+        "Zope",
         "Products.PlonePAS",
     ],
     extras_require={
