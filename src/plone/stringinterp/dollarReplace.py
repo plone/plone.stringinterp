@@ -17,7 +17,6 @@ from zope.interface import implementer
 
 import string
 
-
 _marker = "_bad_"
 
 
