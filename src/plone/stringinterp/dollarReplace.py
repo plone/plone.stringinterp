@@ -15,7 +15,10 @@ from zope.component import ComponentLookupError
 from zope.component import getAdapter
 from zope.interface import implementer
 
+import logging
 import string
+
+logger = logging.getLogger(__name__)
 
 _marker = "_bad_"
 
@@ -37,6 +40,11 @@ class LazyDict:
                     res = _marker
                 except Unauthorized:
                     res = "Unauthorized"
+                except Exception:
+                    logger.warning(
+                        "Error in string substitution for '%s'.", key, exc_info=True
+                    )
+                    res = _marker
 
                 self._cache[key] = res
 
