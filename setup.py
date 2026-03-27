@@ -1,6 +1,6 @@
 from setuptools import setup
 
-version = "3.0.0a2"
+version = "3.0.0a3.dev0"
 
 setup(
     name="plone.stringinterp",
