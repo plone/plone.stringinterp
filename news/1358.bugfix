@@ -1,2 +1,0 @@
-Catch exceptions from string substitution adapters instead of crashing. Fixes content rule email actions failing when a substitution variable raises an error.
-@jensens

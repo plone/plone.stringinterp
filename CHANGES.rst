@@ -8,6 +8,23 @@ Changelog
 
 .. towncrier release notes start
 
+3.0.0a2 (2026-03-27)
+--------------------
+
+Bug fixes:
+
+
+- Catch exceptions from string substitution adapters instead of crashing. Fixes content rule email actions failing when a substitution variable raises an error.
+  @jensens (#1358)
+
+
+Internal:
+
+
+- Update configuration files.
+  [plone devs]
+
+
 3.0.0a1 (2025-11-19)
 --------------------
 
